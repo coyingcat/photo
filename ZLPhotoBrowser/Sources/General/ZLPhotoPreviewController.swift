@@ -99,6 +99,10 @@ class ZLPhotoPreviewController: UIViewController {
         self.currentIndex = index
         self.indexBeforOrientationChanged = index
         super.init(nibName: nil, bundle: nil)
+        
+        
+        view.layer.borderWidth = 2
+        view.layer.borderColor = UIColor.green.cgColor
     }
     
     required init?(coder: NSCoder) {
