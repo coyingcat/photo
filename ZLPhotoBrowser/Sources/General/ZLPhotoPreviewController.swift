@@ -59,8 +59,6 @@ class ZLPhotoPreviewController: UIViewController {
     
     var bottomBlurView: UIVisualEffectView?
     
-    var editBtn: UIButton!
-    
     var originalBtn: UIButton!
     
     var doneBtn: UIButton!
@@ -116,6 +114,8 @@ class ZLPhotoPreviewController: UIViewController {
         
         self.addPopInteractiveTransition()
         self.resetSubViewStatus()
+        
+        editBtnClick()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -199,7 +199,7 @@ class ZLPhotoPreviewController: UIViewController {
         
         let editTitle = localLanguageTextValue(.edit)
         let editBtnW = editTitle.boundingRect(font: ZLLayout.bottomToolTitleFont, limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: 30)).width
-        self.editBtn.frame = CGRect(x: 15, y: btnY, width: editBtnW, height: btnH)
+      
         
         let originalTitle = localLanguageTextValue(.originalPhoto)
         let w = originalTitle.boundingRect(font: ZLLayout.bottomToolTitleFont, limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: 30)).width + 30
@@ -309,10 +309,6 @@ class ZLPhotoPreviewController: UIViewController {
             return btn
         }
         
-        self.editBtn = createBtn(localLanguageTextValue(.edit), #selector(editBtnClick))
-        self.editBtn.isHidden = (!config.allowEditImage && !config.allowEditVideo)
-        self.bottomView.addSubview(self.editBtn)
-        
         self.originalBtn = createBtn(localLanguageTextValue(.originalPhoto), #selector(originalPhotoClick))
         self.originalBtn.setImage(getImage("zl_btn_original_circle"), for: .normal)
         self.originalBtn.setImage(getImage("zl_btn_original_selected"), for: .selected)
@@ -417,7 +413,6 @@ class ZLPhotoPreviewController: UIViewController {
                 hideEditBtn = false
             }
         }
-        self.editBtn.isHidden = hideEditBtn
         
         if ZLPhotoConfiguration.default().allowSelectOriginal && ZLPhotoConfiguration.default().allowSelectImage {
             self.originalBtn.isHidden = !((currentModel.type == .image) || (currentModel.type == .livePhoto && !config.allowSelectLivePhoto) || (currentModel.type == .gif && !config.allowSelectGif))
