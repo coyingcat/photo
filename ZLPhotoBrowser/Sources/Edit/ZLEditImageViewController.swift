@@ -28,7 +28,6 @@ import UIKit
 
 public class ZLEditImageModel: NSObject {
     
-    public let drawPaths: [ZLDrawPath]
     
     public let mosaicPaths: [ZLMosaicPath]
     
@@ -40,8 +39,8 @@ public class ZLEditImageModel: NSObject {
     
     public let selectFilter: ZLFilter?
 
-    init(drawPaths: [ZLDrawPath], mosaicPaths: [ZLMosaicPath], editRect: CGRect?, angle: CGFloat, selectRatio: ZLImageClipRatio?, selectFilter: ZLFilter) {
-        self.drawPaths = drawPaths
+    init(mosaicPaths: [ZLMosaicPath], editRect: CGRect?, angle: CGFloat, selectRatio: ZLImageClipRatio?, selectFilter: ZLFilter) {
+    
         self.mosaicPaths = mosaicPaths
         self.editRect = editRect
         self.angle = angle
@@ -130,9 +129,7 @@ public class ZLEditImageViewController: UIViewController {
     let drawColors: [UIColor]
     
     var currentDrawColor = ZLPhotoConfiguration.default().editImageDefaultDrawColor
-    
-    var drawPaths: [ZLDrawPath]
-    
+
     var drawLineWidth: CGFloat = 5
     
     var mosaicPaths: [ZLMosaicPath]
@@ -156,8 +153,6 @@ public class ZLEditImageViewController: UIViewController {
     var imageStickerContainerIsHidden = true
     
     var angle: CGFloat
-    
-    var panGes: UIPanGestureRecognizer!
     
     var imageSize: CGSize {
         if self.angle == -90 || self.angle == -270 {
@@ -185,7 +180,7 @@ public class ZLEditImageViewController: UIViewController {
         if ZLPhotoConfiguration.default().showClipDirectlyIfOnlyHasClipTool, tools.count == 1, tools.contains(.clip) {
             let vc = ZLClipImageViewController(image: image, editRect: editModel?.editRect, angle: editModel?.angle ?? 0, selectRatio: editModel?.selectRatio)
             vc.clipDoneBlock = { (angle, editRect, ratio) in
-                let m = ZLEditImageModel(drawPaths: [], mosaicPaths: [], editRect: editRect, angle: angle, selectRatio: ratio, selectFilter: .normal)
+                let m = ZLEditImageModel(mosaicPaths: [], editRect: editRect, angle: angle, selectRatio: ratio, selectFilter: .normal)
                 completion?(image.clipImage(angle, editRect) ?? image, m)
             }
             vc.animate = animate
@@ -208,7 +203,6 @@ public class ZLEditImageViewController: UIViewController {
         self.editRect = editModel?.editRect ?? CGRect(origin: .zero, size: image.size)
         self.drawColors = ZLPhotoConfiguration.default().editImageDrawColors
         self.currentFilter = editModel?.selectFilter ?? .normal
-        self.drawPaths = editModel?.drawPaths ?? []
         self.mosaicPaths = editModel?.mosaicPaths ?? []
         self.angle = editModel?.angle ?? 0
         self.selectRatio = editModel?.selectRatio
@@ -274,9 +268,6 @@ public class ZLEditImageViewController: UIViewController {
         
         self.editToolCollectionView.frame = CGRect(x: 20, y: toolY, width: self.view.bounds.width - 20 - 20 - doneBtnW - 20, height: 30)
         
-        if !self.drawPaths.isEmpty {
-            self.drawLine()
-        }
         if !self.mosaicPaths.isEmpty {
             self.generateNewMosaicImage()
         }
@@ -460,7 +451,7 @@ public class ZLEditImageViewController: UIViewController {
         self.revokeBtn.adjustsImageWhenHighlighted = false
         self.revokeBtn.isEnabled = false
         self.revokeBtn.isHidden = true
-        self.revokeBtn.addTarget(self, action: #selector(revokeBtnClick), for: .touchUpInside)
+   
         self.bottomShadowView.addSubview(self.revokeBtn)
         
         let ashbinSize = CGSize(width: 160, height: 80)
@@ -516,12 +507,6 @@ public class ZLEditImageViewController: UIViewController {
         tapGes.delegate = self
         self.view.addGestureRecognizer(tapGes)
         
-        self.panGes = UIPanGestureRecognizer(target: self, action: #selector(drawAction(_:)))
-        self.panGes.maximumNumberOfTouches = 1
-        self.panGes.delegate = self
-        self.view.addGestureRecognizer(self.panGes)
-        self.scrollView.panGestureRecognizer.require(toFail: self.panGes)
-        
     }
     
     func rotationImageView() {
@@ -544,7 +529,7 @@ public class ZLEditImageViewController: UIViewController {
         }
         self.drawColorCollectionView.isHidden = !isSelected
         self.revokeBtn.isHidden = !isSelected
-        self.revokeBtn.isEnabled = self.drawPaths.count > 0
+      
         self.filterCollectionView.isHidden = true
     }
     
@@ -614,7 +599,7 @@ public class ZLEditImageViewController: UIViewController {
     @objc func doneBtnClick() {
         
         var hasEdit = true
-        if self.drawPaths.isEmpty, self.editRect.size == self.imageSize, self.angle == 0, self.mosaicPaths.isEmpty,  self.currentFilter.applier == nil {
+        if self.editRect.size == self.imageSize, self.angle == 0, self.mosaicPaths.isEmpty,  self.currentFilter.applier == nil {
             hasEdit = false
         }
         
@@ -623,30 +608,13 @@ public class ZLEditImageViewController: UIViewController {
         if hasEdit {
             resImage = self.buildImage()
             resImage = resImage.clipImage(self.angle, self.editRect) ?? resImage
-            editModel = ZLEditImageModel(drawPaths: self.drawPaths, mosaicPaths: self.mosaicPaths, editRect: self.editRect, angle: self.angle, selectRatio: self.selectRatio, selectFilter: self.currentFilter)
+            editModel = ZLEditImageModel(mosaicPaths: self.mosaicPaths, editRect: self.editRect, angle: self.angle, selectRatio: self.selectRatio, selectFilter: self.currentFilter)
         }
         self.editFinishBlock?(resImage, editModel)
         
         self.dismiss(animated: self.animate, completion: nil)
     }
-    
-    @objc func revokeBtnClick() {
-        if self.selectedTool == .draw {
-            guard !self.drawPaths.isEmpty else {
-                return
-            }
-            self.drawPaths.removeLast()
-            self.revokeBtn.isEnabled = self.drawPaths.count > 0
-            self.drawLine()
-        } else if self.selectedTool == .mosaic {
-            guard !self.mosaicPaths.isEmpty else {
-                return
-            }
-            self.mosaicPaths.removeLast()
-            self.revokeBtn.isEnabled = self.mosaicPaths.count > 0
-            self.generateNewMosaicImage()
-        }
-    }
+  
     
     @objc func tapAction(_ tap: UITapGestureRecognizer) {
         if self.bottomShadowView.alpha == 1 {
@@ -655,67 +623,7 @@ public class ZLEditImageViewController: UIViewController {
             self.setToolView(show: true)
         }
     }
-    
-    @objc func drawAction(_ pan: UIPanGestureRecognizer) {
-        if self.selectedTool == .draw {
-            let point = pan.location(in: self.drawingImageView)
-            if pan.state == .began {
-                self.setToolView(show: false)
-                
-                let originalRatio = min(self.scrollView.frame.width / self.originalImage.size.width, self.scrollView.frame.height / self.originalImage.size.height)
-                let ratio = min(self.scrollView.frame.width / self.editRect.width, self.scrollView.frame.height / self.editRect.height)
-                let scale = ratio / originalRatio
-                // 缩放到最初的size
-                var size = self.drawingImageView.frame.size
-                size.width /= scale
-                size.height /= scale
-                if self.angle == -90 || self.angle == -270 {
-                    swap(&size.width, &size.height)
-                }
-                
-                var toImageScale = ZLEditImageViewController.maxDrawLineImageWidth / size.width
-                if self.editImage.size.width / self.editImage.size.height > 1 {
-                    toImageScale = ZLEditImageViewController.maxDrawLineImageWidth / size.height
-                }
-                
-                let path = ZLDrawPath(pathColor: self.currentDrawColor, pathWidth: self.drawLineWidth / self.scrollView.zoomScale, ratio: ratio / originalRatio / toImageScale, startPoint: point)
-                self.drawPaths.append(path)
-            } else if pan.state == .changed {
-                let path = self.drawPaths.last
-                path?.addLine(to: point)
-                self.drawLine()
-            } else if pan.state == .cancelled || pan.state == .ended {
-                self.setToolView(show: true)
-                self.revokeBtn.isEnabled = self.drawPaths.count > 0
-            }
-        } else if self.selectedTool == .mosaic {
-            let point = pan.location(in: self.imageView)
-            if pan.state == .began {
-                self.setToolView(show: false)
-                
-                var actualSize = self.editRect.size
-                if self.angle == -90 || self.angle == -270 {
-                    swap(&actualSize.width, &actualSize.height)
-                }
-                let ratio = min(self.scrollView.frame.width / self.editRect.width, self.scrollView.frame.height / self.editRect.height)
-                
-                let pathW = self.mosaicLineWidth / self.scrollView.zoomScale
-                let path = ZLMosaicPath(pathWidth: pathW, ratio: ratio, startPoint: point)
-                
-                self.mosaicImageLayerMaskLayer?.lineWidth = pathW
-                self.mosaicImageLayerMaskLayer?.path = path.path.cgPath
-                self.mosaicPaths.append(path)
-            } else if pan.state == .changed {
-                let path = self.mosaicPaths.last
-                path?.addLine(to: point)
-                self.mosaicImageLayerMaskLayer?.path = path?.path.cgPath
-            } else if pan.state == .cancelled || pan.state == .ended {
-                self.setToolView(show: true)
-                self.revokeBtn.isEnabled = self.mosaicPaths.count > 0
-                self.generateNewMosaicImage()
-            }
-        }
-    }
+
     
     func setToolView(show: Bool) {
         self.topShadowView.layer.removeAllAnimations()
@@ -748,37 +656,6 @@ public class ZLEditImageViewController: UIViewController {
         return originFrame
     }
     
-  
-    
-    func drawLine() {
-        let originalRatio = min(self.scrollView.frame.width / self.originalImage.size.width, self.scrollView.frame.height / self.originalImage.size.height)
-        let ratio = min(self.scrollView.frame.width / self.editRect.width, self.scrollView.frame.height / self.editRect.height)
-        let scale = ratio / originalRatio
-        // 缩放到最初的size
-        var size = self.drawingImageView.frame.size
-        size.width /= scale
-        size.height /= scale
-        if self.angle == -90 || self.angle == -270 {
-            swap(&size.width, &size.height)
-        }
-        var toImageScale = ZLEditImageViewController.maxDrawLineImageWidth / size.width
-        if self.editImage.size.width / self.editImage.size.height > 1 {
-            toImageScale = ZLEditImageViewController.maxDrawLineImageWidth / size.height
-        }
-        size.width *= toImageScale
-        size.height *= toImageScale
-        
-        UIGraphicsBeginImageContextWithOptions(size, false, self.editImage.scale)
-        let context = UIGraphicsGetCurrentContext()
-        // 去掉锯齿
-        context?.setAllowsAntialiasing(true)
-        context?.setShouldAntialias(true)
-        for path in self.drawPaths {
-            path.drawPath()
-        }
-        self.drawingImageView.image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-    }
     
     func generateNewMosaicImage() {
         UIGraphicsBeginImageContextWithOptions(self.originalImage.size, false, self.originalImage.scale)
@@ -1208,52 +1085,6 @@ class ZLFilterImageCell: UICollectionViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-}
-
-
-// MARK: 涂鸦path
-
-public class ZLDrawPath: NSObject {
-    
-    let pathColor: UIColor
-    
-    let path: UIBezierPath
-    
-    let ratio: CGFloat
-    
-    let shapeLayer: CAShapeLayer
-    
-    init(pathColor: UIColor, pathWidth: CGFloat, ratio: CGFloat, startPoint: CGPoint) {
-        self.pathColor = pathColor
-        self.path = UIBezierPath()
-        self.path.lineWidth = pathWidth / ratio
-        self.path.lineCapStyle = .round
-        self.path.lineJoinStyle = .round
-        self.path.move(to: CGPoint(x: startPoint.x / ratio, y: startPoint.y / ratio))
-        
-        self.shapeLayer = CAShapeLayer()
-        self.shapeLayer.lineCap = .round
-        self.shapeLayer.lineJoin = .round
-        self.shapeLayer.lineWidth = pathWidth / ratio
-        self.shapeLayer.fillColor = UIColor.clear.cgColor
-        self.shapeLayer.strokeColor = pathColor.cgColor
-        self.shapeLayer.path = self.path.cgPath
-        
-        self.ratio = ratio
-        
-        super.init()
-    }
-    
-    func addLine(to point: CGPoint) {
-        self.path.addLine(to: CGPoint(x: point.x / self.ratio, y: point.y / self.ratio))
-        self.shapeLayer.path = self.path.cgPath
-    }
-    
-    func drawPath() {
-        self.pathColor.set()
-        self.path.stroke()
     }
     
 }

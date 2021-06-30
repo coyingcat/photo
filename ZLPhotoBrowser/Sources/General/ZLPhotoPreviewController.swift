@@ -576,30 +576,7 @@ class ZLPhotoPreviewController: UIViewController {
     }
     
     func showEditVideoVC(model: ZLPhotoModel, avAsset: AVAsset) {
-        let nav = self.navigationController as! ZLImageNavController
-        let vc = ZLEditVideoViewController(avAsset: avAsset)
-        vc.modalPresentationStyle = .fullScreen
-        
-        vc.editFinishBlock = { [weak self, weak nav] (url) in
-            if let u = url {
-                ZLPhotoManager.saveVideoToAlbum(url: u) { [weak self, weak nav] (suc, asset) in
-                    if suc, asset != nil {
-                        let m = ZLPhotoModel(asset: asset!)
-                        nav?.arrSelectedModels.removeAll()
-                        nav?.arrSelectedModels.append(m)
-                        nav?.selectImageBlock?()
-                    } else {
-                        showAlertView(localLanguageTextValue(.saveVideoError), self)
-                    }
-                }
-            } else {
-                nav?.arrSelectedModels.removeAll()
-                nav?.arrSelectedModels.append(model)
-                nav?.selectImageBlock?()
-            }
-        }
-        
-        self.present(vc, animated: false, completion: nil)
+   
     }
     
 }
