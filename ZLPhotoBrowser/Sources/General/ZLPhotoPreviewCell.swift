@@ -191,36 +191,20 @@ class ZLLocalImagePreviewCell: ZLPreviewBaseCell {
 // MARK: net image preview cell
 class ZLNetImagePreviewCell: ZLLocalImagePreviewCell {
     
-    var progressView: ZLProgressView!
     
-    var progress: CGFloat = 0 {
-        didSet {
-            progressView.progress = progress
-            progressView.isHidden = progress >= 1
-        }
-    }
+    var progress: CGFloat = 0 
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        self.progressView = ZLProgressView()
-        self.progressView.isHidden = true
-        self.contentView.addSubview(self.progressView)
+
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        self.bringSubviewToFront(self.progressView)
-        self.progressView.frame = CGRect(x: self.bounds.width / 2 - 20, y: self.bounds.height / 2 - 20, width: 40, height: 40)
-    }
-    
     override func resetSubViewStatusWhenCellEndDisplay() {
-        self.progressView.isHidden = true
+
         self.preview.scrollView.zoomScale = 1
     }
     
@@ -471,8 +455,6 @@ class ZLVideoPreviewCell: ZLPreviewBaseCell {
     
     var playerLayer: AVPlayerLayer?
     
-    var progressView: ZLProgressView!
-    
     var imageView: UIImageView!
     
     var playBtn: UIButton!
@@ -520,7 +502,7 @@ class ZLVideoPreviewCell: ZLPreviewBaseCell {
         let insets = deviceSafeAreaInsets()
         self.playBtn.frame = CGRect(x: 0, y: insets.top, width: self.bounds.width, height: self.bounds.height - insets.top - insets.bottom)
         self.syncErrorLabel.frame = CGRect(x: 10, y: insets.top + 60, width: self.bounds.width - 20, height: 35)
-        self.progressView.frame = CGRect(x: self.bounds.width / 2 - 30, y: self.bounds.height / 2 - 30, width: 60, height: 60)
+ 
     }
     
     private func setupUI() {
@@ -539,9 +521,6 @@ class ZLVideoPreviewCell: ZLPreviewBaseCell {
         self.syncErrorLabel = UILabel()
         self.syncErrorLabel.attributedText = attStr
         self.contentView.addSubview(self.syncErrorLabel)
-        
-        self.progressView = ZLProgressView()
-        self.contentView.addSubview(self.progressView)
         
         self.playBtn = UIButton(type: .custom)
         self.playBtn.setImage(getImage("zl_playVideo"), for: .normal)
@@ -578,14 +557,9 @@ class ZLVideoPreviewCell: ZLPreviewBaseCell {
         })
         
         self.videoRequestID = ZLPhotoManager.fetchVideo(for: self.model.asset, progress: { [weak self] (progress, _, _, _) in
-            self?.progressView.progress = progress
+    
             zl_debugPrint("video progress \(progress)")
-            if progress >= 1 {
-                zl_debugPrint("video load finished")
-                self?.progressView.isHidden = true
-            } else {
-                self?.progressView.isHidden = false
-            }
+        
         }, completion: { [weak self] (item, info, isDegraded) in
             let error = info?[PHImageErrorKey] as? Error
             let isFetchError = ZLPhotoManager.isFetchImageError(error)
@@ -794,7 +768,6 @@ class ZLPreviewView: UIView {
         self.imageView.image
     }
     
-    var progressView: ZLProgressView!
     
     var singleTapBlock: ( () -> Void )?
     
@@ -829,7 +802,7 @@ class ZLPreviewView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         self.scrollView.frame = self.bounds
-        self.progressView.frame = CGRect(x: self.bounds.width / 2 - 20, y: self.bounds.height / 2 - 20, width: 40, height: 40)
+
         self.scrollView.zoomScale = 1
         self.resetSubViewSize()
     }
@@ -852,9 +825,6 @@ class ZLPreviewView: UIView {
         self.imageView.contentMode = .scaleAspectFill
         self.imageView.clipsToBounds = true
         self.containerView.addSubview(self.imageView)
-        
-        self.progressView = ZLProgressView()
-        self.addSubview(self.progressView)
         
         let singleTap = UITapGestureRecognizer(target: self, action: #selector(singleTapAction(_:)))
         self.addGestureRecognizer(singleTap)
@@ -915,12 +885,9 @@ class ZLPreviewView: UIView {
             self.resetSubViewSize()
         } else {
             self.imageRequestID = ZLPhotoManager.fetchImage(for: self.model.asset, size: self.requestPhotoSize(gif: false), progress: { [weak self] (progress, _, _, _) in
-                self?.progressView.progress = progress
-                if progress >= 1 {
-                    self?.progressView.isHidden = true
-                } else {
-                    self?.progressView.isHidden = false
-                }
+              
+                
+                
             }, completion: { [weak self] (image, isDegraded) in
                 guard self?.imageIdentifier == self?.model.ident else {
                     return
@@ -928,7 +895,7 @@ class ZLPreviewView: UIView {
                 self?.imageView.image = image
                 self?.resetSubViewSize()
                 if !isDegraded {
-                    self?.progressView.isHidden = true
+             
                     self?.imageRequestID = PHInvalidImageRequestID
                 }
             })
@@ -963,12 +930,7 @@ class ZLPreviewView: UIView {
         self.imageView.layer.timeOffset = 0
         self.imageView.layer.beginTime = 0
         self.gifImageRequestID = ZLPhotoManager.fetchOriginalImageData(for: self.model.asset, progress: { [weak self] (progress, _, _, _) in
-            self?.progressView.progress = progress
-            if progress >= 1 {
-                self?.progressView.isHidden = true
-            } else {
-                self?.progressView.isHidden = false
-            }
+         
         }, completion: { [weak self] (data, _, isDegraded) in
             guard self?.imageIdentifier == self?.model.ident else {
                 return

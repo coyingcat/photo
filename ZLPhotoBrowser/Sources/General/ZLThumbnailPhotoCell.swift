@@ -49,7 +49,6 @@ class ZLThumbnailPhotoCell: UICollectionViewCell {
     
     var enableSelect: Bool = true
     
-    var progressView: ZLProgressView!
     
     var selectedBlock: ( (Bool) -> Void )?
     
@@ -130,9 +129,6 @@ class ZLThumbnailPhotoCell: UICollectionViewCell {
         self.descLabel.textColor = .white
         self.bottomShadowView.addSubview(self.descLabel)
         
-        self.progressView = ZLProgressView()
-        self.progressView.isHidden = true
-        self.contentView.addSubview(self.progressView)
         
         if ZLPhotoConfiguration.default().showSelectedBorder {
             self.layer.borderColor = UIColor.selectedBorderColor.cgColor
@@ -149,7 +145,7 @@ class ZLThumbnailPhotoCell: UICollectionViewCell {
         self.livePhotoTag.frame = CGRect(x: 5, y: -1, width: 20, height: 20)
         self.editImageTag.frame = CGRect(x: 5, y: -1, width: 20, height: 20)
         self.descLabel.frame = CGRect(x: 30, y: 1, width: self.bounds.width - 35, height: 17)
-        self.progressView.frame = CGRect(x: (self.bounds.width - 20)/2, y: (self.bounds.height - 20)/2, width: 20, height: 20)
+
         
         super.layoutSubviews()
     }
@@ -169,7 +165,6 @@ class ZLThumbnailPhotoCell: UICollectionViewCell {
         if self.btnSelect.isSelected {
             self.fetchBigImage()
         } else {
-            self.progressView.isHidden = true
             self.cancelFetchBigImage()
         }
     }
@@ -272,8 +267,6 @@ class ZLThumbnailPhotoCell: UICollectionViewCell {
         
         self.bigImageReqeustID = ZLPhotoManager.fetchOriginalImageData(for: self.model.asset, progress: { [weak self] (progress, error, _, _) in
             if self?.model.isSelected == true {
-                self?.progressView.isHidden = false
-                self?.progressView.progress = max(0.1, progress)
                 self?.imageView.alpha = 0.5
                 if progress >= 1 {
                     self?.resetProgressViewStatus()
@@ -294,7 +287,6 @@ class ZLThumbnailPhotoCell: UICollectionViewCell {
     }
     
     func resetProgressViewStatus() {
-        self.progressView.isHidden = true
         self.imageView.alpha = 1
     }
     
