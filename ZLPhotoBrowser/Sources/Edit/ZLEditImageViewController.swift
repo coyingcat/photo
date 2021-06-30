@@ -379,32 +379,6 @@ public class ZLEditImageViewController: UIViewController {
         asbinTipLabel.lineBreakMode = .byCharWrapping
         self.ashbinView.addSubview(asbinTipLabel)
         
-        if self.tools.contains(.mosaic) {
-            // 之前选择过滤镜
-        
-            self.mosaicImage = self.originalImage.mosaicImage()
-            
-            
-            self.mosaicImageLayer = CALayer()
-            self.mosaicImageLayer?.contents = self.mosaicImage?.cgImage
-            self.imageView.layer.addSublayer(self.mosaicImageLayer!)
-            
-            self.mosaicImageLayerMaskLayer = CAShapeLayer()
-            self.mosaicImageLayerMaskLayer?.strokeColor = UIColor.blue.cgColor
-            self.mosaicImageLayerMaskLayer?.fillColor = nil
-            self.mosaicImageLayerMaskLayer?.lineCap = .round
-            self.mosaicImageLayerMaskLayer?.lineJoin = .round
-            self.imageView.layer.addSublayer(self.mosaicImageLayerMaskLayer!)
-            
-            self.mosaicImageLayer?.mask = self.mosaicImageLayerMaskLayer
-        }
-        
-    
-        
-        let tapGes = UITapGestureRecognizer(target: self, action: #selector(tapAction(_:)))
-        tapGes.delegate = self
-        self.view.addGestureRecognizer(tapGes)
-        
     }
     
     func rotationImageView() {
@@ -510,32 +484,9 @@ public class ZLEditImageViewController: UIViewController {
         self.dismiss(animated: self.animate, completion: nil)
     }
   
-    
-    @objc func tapAction(_ tap: UITapGestureRecognizer) {
-        if self.bottomShadowView.alpha == 1 {
-            self.setToolView(show: false)
-        } else {
-            self.setToolView(show: true)
-        }
-    }
 
     
-    func setToolView(show: Bool) {
-        self.topShadowView.layer.removeAllAnimations()
-        self.bottomShadowView.layer.removeAllAnimations()
-        if show {
-            UIView.animate(withDuration: 0.25) {
-                self.topShadowView.alpha = 1
-                self.bottomShadowView.alpha = 1
-            }
-        } else {
-            UIView.animate(withDuration: 0.25) {
-                self.topShadowView.alpha = 0
-                self.bottomShadowView.alpha = 0
-            }
-        }
-    }
-    
+
    
     
     func getStickerOriginFrame(_ size: CGSize) -> CGRect {
