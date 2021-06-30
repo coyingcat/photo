@@ -61,7 +61,6 @@
 		E4765FA6254189E4007B2C0F /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4765F70254189E4007B2C0F /* Box.swift */; };
 		E4765FA7254189E4007B2C0F /* String+MD5.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4765F71254189E4007B2C0F /* String+MD5.swift */; };
 		E480050825316920008A2B67 /* ZLCustomFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E480050725316920008A2B67 /* ZLCustomFilter.swift */; };
-		E4A4109724F39DF700EEC20B /* PhotoConfigureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A4109624F39DF700EEC20B /* PhotoConfigureViewController.swift */; };
 		E4A410C024F39F0000EEC20B /* ConstraintMultiplierTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A4109924F39F0000EEC20B /* ConstraintMultiplierTarget.swift */; };
 		E4A410C124F39F0000EEC20B /* LayoutConstraintItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A4109A24F39F0000EEC20B /* LayoutConstraintItem.swift */; };
 		E4A410C224F39F0000EEC20B /* ConstraintDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A4109B24F39F0000EEC20B /* ConstraintDescription.swift */; };
@@ -99,7 +98,6 @@
 		E4A410E324F39F0000EEC20B /* ConstraintDirectionalInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A410BD24F39F0000EEC20B /* ConstraintDirectionalInsets.swift */; };
 		E4A410E424F39F0000EEC20B /* ConstraintLayoutSupportDSL.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A410BE24F39F0000EEC20B /* ConstraintLayoutSupportDSL.swift */; };
 		E4A410E524F39F0000EEC20B /* ConstraintMakerRelatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A410BF24F39F0000EEC20B /* ConstraintMakerRelatable.swift */; };
-		E4C69FEC253ED19600AE466C /* LanguagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C69FEB253ED19600AE466C /* LanguagePickerView.swift */; };
 		E4C69FEE253EDA8600AE466C /* PhotoConfigureCNViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C69FED253EDA8600AE466C /* PhotoConfigureCNViewController.swift */; };
 		E4C911A324E283D80061DA40 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C911A224E283D80061DA40 /* AppDelegate.swift */; };
 		E4C911A724E283D80061DA40 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C911A624E283D80061DA40 /* ViewController.swift */; };
@@ -181,7 +179,6 @@
 		E4765F70254189E4007B2C0F /* Box.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		E4765F71254189E4007B2C0F /* String+MD5.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+MD5.swift"; sourceTree = "<group>"; };
 		E480050725316920008A2B67 /* ZLCustomFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZLCustomFilter.swift; sourceTree = "<group>"; };
-		E4A4109624F39DF700EEC20B /* PhotoConfigureViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoConfigureViewController.swift; sourceTree = "<group>"; };
 		E4A4109924F39F0000EEC20B /* ConstraintMultiplierTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConstraintMultiplierTarget.swift; sourceTree = "<group>"; };
 		E4A4109A24F39F0000EEC20B /* LayoutConstraintItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutConstraintItem.swift; sourceTree = "<group>"; };
 		E4A4109B24F39F0000EEC20B /* ConstraintDescription.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConstraintDescription.swift; sourceTree = "<group>"; };
@@ -220,7 +217,6 @@
 		E4A410BD24F39F0000EEC20B /* ConstraintDirectionalInsets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConstraintDirectionalInsets.swift; sourceTree = "<group>"; };
 		E4A410BE24F39F0000EEC20B /* ConstraintLayoutSupportDSL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConstraintLayoutSupportDSL.swift; sourceTree = "<group>"; };
 		E4A410BF24F39F0000EEC20B /* ConstraintMakerRelatable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConstraintMakerRelatable.swift; sourceTree = "<group>"; };
-		E4C69FEB253ED19600AE466C /* LanguagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguagePickerView.swift; sourceTree = "<group>"; };
 		E4C69FED253EDA8600AE466C /* PhotoConfigureCNViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoConfigureCNViewController.swift; sourceTree = "<group>"; };
 		E4C9119F24E283D80061DA40 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4C911A224E283D80061DA40 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -444,10 +440,8 @@
 				E4C911A224E283D80061DA40 /* AppDelegate.swift */,
 				E4C911A624E283D80061DA40 /* ViewController.swift */,
 				E480050725316920008A2B67 /* ZLCustomFilter.swift */,
-				E4A4109624F39DF700EEC20B /* PhotoConfigureViewController.swift */,
 				E4C69FED253EDA8600AE466C /* PhotoConfigureCNViewController.swift */,
 				E42F8ADA25CA9CDF009775A3 /* WeChatMomentDemoViewController.swift */,
-				E4C69FEB253ED19600AE466C /* LanguagePickerView.swift */,
 				E44A20EF2567763A00FE6CAE /* ImageStickerContainerView.swift */,
 				E462466F24EE6F9A00EF6C57 /* ImageCell.swift */,
 				E4C911A824E283D80061DA40 /* Main.storyboard */,
@@ -561,9 +555,7 @@
 				E4765F7C254189E4007B2C0F /* ImageDataProvider.swift in Sources */,
 				E4765F80254189E4007B2C0F /* KingfisherOptionsInfo.swift in Sources */,
 				E4765F72254189E4007B2C0F /* Storage.swift in Sources */,
-				E4A4109724F39DF700EEC20B /* PhotoConfigureViewController.swift in Sources */,
 				E4765F98254189E4007B2C0F /* WKInterfaceImage+Kingfisher.swift in Sources */,
-				E4C69FEC253ED19600AE466C /* LanguagePickerView.swift in Sources */,
 				E4C911A724E283D80061DA40 /* ViewController.swift in Sources */,
 				E4A410E324F39F0000EEC20B /* ConstraintDirectionalInsets.swift in Sources */,
 				E4765FA2254189E4007B2C0F /* Delegate.swift in Sources */,

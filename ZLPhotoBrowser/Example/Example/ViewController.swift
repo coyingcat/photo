@@ -38,9 +38,10 @@ class ViewController: UIViewController {
             return btn
         }
         
-        let configBtn = createBtn("Configuration", #selector(configureClick))
-        self.view.addSubview(configBtn)
-        configBtn.snp.makeConstraints { (make) in
+     
+        let configBtn_cn = createBtn("相册配置 (中文)", #selector(cn_configureClick))
+        self.view.addSubview(configBtn_cn)
+        configBtn_cn.snp.makeConstraints { (make) in
             if #available(iOS 11.0, *) {
                 make.top.equalTo(self.view.snp.topMargin).offset(20)
             } else {
@@ -50,18 +51,11 @@ class ViewController: UIViewController {
             make.left.equalTo(self.view).offset(30)
         }
         
-        let configBtn_cn = createBtn("相册配置 (中文)", #selector(cn_configureClick))
-        self.view.addSubview(configBtn_cn)
-        configBtn_cn.snp.makeConstraints { (make) in
-            make.top.equalTo(configBtn.snp.top)
-            make.left.equalTo(configBtn.snp.right).offset(30)
-        }
-        
         let previewSelectBtn = createBtn("Preview selection", #selector(previewSelectPhoto))
         self.view.addSubview(previewSelectBtn)
         previewSelectBtn.snp.makeConstraints { (make) in
-            make.top.equalTo(configBtn.snp.bottom).offset(20)
-            make.left.equalTo(configBtn.snp.left)
+            make.top.equalTo(configBtn_cn.snp.bottom).offset(20)
+            make.left.equalTo(configBtn_cn.snp.left)
         }
         
         let libratySelectBtn = createBtn("Library selection", #selector(librarySelectPhoto))
@@ -74,7 +68,7 @@ class ViewController: UIViewController {
         let cameraBtn = createBtn("Custom camera", #selector(showCamera))
         self.view.addSubview(cameraBtn)
         cameraBtn.snp.makeConstraints { (make) in
-            make.left.equalTo(configBtn.snp.left)
+            make.left.equalTo(configBtn_cn.snp.left)
             make.top.equalTo(previewSelectBtn.snp.bottom).offset(20)
         }
         
@@ -88,7 +82,7 @@ class ViewController: UIViewController {
         let wechatMomentDemoBtn = createBtn("Create WeChat moment Demo", #selector(createWeChatMomentDemo))
         self.view.addSubview(wechatMomentDemoBtn)
         wechatMomentDemoBtn.snp.makeConstraints { (make) in
-            make.left.equalTo(configBtn.snp.left)
+            make.left.equalTo(configBtn_cn.snp.left)
             make.top.equalTo(cameraBtn.snp.bottom).offset(20)
         }
         
@@ -98,7 +92,7 @@ class ViewController: UIViewController {
         takeLabel.text = "Record selected photos："
         self.view.addSubview(takeLabel)
         takeLabel.snp.makeConstraints { (make) in
-            make.left.equalTo(configBtn.snp.left)
+            make.left.equalTo(configBtn_cn.snp.left)
             make.top.equalTo(wechatMomentDemoBtn.snp.bottom).offset(20)
         }
         
@@ -124,10 +118,6 @@ class ViewController: UIViewController {
         self.collectionView.register(ImageCell.classForCoder(), forCellWithReuseIdentifier: "ImageCell")
     }
     
-    @objc func configureClick() {
-        let vc = PhotoConfigureViewController()
-        self.showDetailViewController(vc, sender: nil)
-    }
     
     @objc func cn_configureClick() {
         let vc = PhotoConfigureCNViewController()

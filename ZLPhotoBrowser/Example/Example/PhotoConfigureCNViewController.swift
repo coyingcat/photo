@@ -320,8 +320,8 @@ class PhotoConfigureCNViewController: UIViewController {
         
         self.languageButton = UIButton(type: .custom)
         self.languageButton.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-        self.languageButton.setTitle(config.languageType.toString(), for: .normal)
-        self.languageButton.addTarget(self, action: #selector(languageButtonClick), for: .touchUpInside)
+        self.languageButton.setTitle("中文简体 (Chinese Simplified)", for: .normal)
+
         self.languageButton.setTitleColor(.white, for: .normal)
         self.languageButton.layer.cornerRadius = 5
         self.languageButton.layer.masksToBounds = true
@@ -876,19 +876,7 @@ class PhotoConfigureCNViewController: UIViewController {
         config.style = styleSegment.selectedSegmentIndex == 0 ? .embedAlbumList : .externalAlbumList
     }
     
-    @objc func languageButtonClick() {
-        let languagePicker = LanguagePickerView(selectedLanguage: config.languageType)
-        
-        languagePicker.selectBlock = { [weak self] (language) in
-            self?.languageButton.setTitle(language.toString(), for: .normal)
-            self?.config.languageType = language
-        }
-        
-        languagePicker.show(in: self.view)
-        languagePicker.snp.makeConstraints { (make) in
-            make.edges.equalTo(self.view)
-        }
-    }
+
     
     @objc func columnStepperValueChanged() {
         columnCountLabel.text = String(Int(columnStepper.value))
