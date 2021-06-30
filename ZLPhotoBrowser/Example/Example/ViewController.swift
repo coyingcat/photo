@@ -232,9 +232,9 @@ class ViewController: UIViewController {
     }
     
     func save(image: UIImage?, videoUrl: URL?) {
-        let hud = ZLProgressHUD(style: ZLPhotoConfiguration.default().hudStyle)
+
         if let image = image {
-            hud.show()
+        
             ZLPhotoManager.saveImageToAlbum(image: image) { [weak self] (suc, asset) in
                 if suc, let at = asset {
                     self?.selectedImages = [image]
@@ -243,17 +243,16 @@ class ViewController: UIViewController {
                 } else {
                     debugPrint("保存图片到相册失败")
                 }
-                hud.hide()
+         
             }
         } else if let videoUrl = videoUrl {
-            hud.show()
+       
             ZLPhotoManager.saveVideoToAlbum(url: videoUrl) { [weak self] (suc, asset) in
                 if suc, let at = asset {
                     self?.fetchImage(for: at)
                 } else {
                     debugPrint("保存视频到相册失败")
                 }
-                hud.hide()
             }
         }
     }

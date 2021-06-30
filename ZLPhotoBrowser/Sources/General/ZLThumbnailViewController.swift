@@ -410,15 +410,14 @@ class ZLThumbnailViewController: UIViewController {
     func loadPhotos() {
         let nav = self.navigationController as! ZLImageNavController
         if self.albumList.models.isEmpty {
-            let hud = ZLProgressHUD(style: ZLPhotoConfiguration.default().hudStyle)
-            hud.show()
+           
             DispatchQueue.global().async {
                 self.albumList.refetchPhotos()
                 DispatchQueue.main.async {
                     self.arrDataSources.removeAll()
                     self.arrDataSources.append(contentsOf: self.albumList.models)
                     markSelected(source: &self.arrDataSources, selected: &nav.arrSelectedModels)
-                    hud.hide()
+           
                     self.collectionView.reloadData()
                     self.scrollToBottom()
                 }
@@ -725,9 +724,9 @@ class ZLThumbnailViewController: UIViewController {
     }
     
     func save(image: UIImage?, videoUrl: URL?) {
-        let hud = ZLProgressHUD(style: ZLPhotoConfiguration.default().hudStyle)
+     
         if let image = image {
-            hud.show()
+      
             ZLPhotoManager.saveImageToAlbum(image: image) { [weak self] (suc, asset) in
                 if suc, let at = asset {
                     let model = ZLPhotoModel(asset: at)
@@ -735,10 +734,9 @@ class ZLThumbnailViewController: UIViewController {
                 } else {
                     showAlertView(localLanguageTextValue(.saveImageError), self)
                 }
-                hud.hide()
+     
             }
         } else if let videoUrl = videoUrl {
-            hud.show()
             ZLPhotoManager.saveVideoToAlbum(url: videoUrl) { [weak self] (suc, asset) in
                 if suc, let at = asset {
                     let model = ZLPhotoModel(asset: at)
@@ -746,7 +744,6 @@ class ZLThumbnailViewController: UIViewController {
                 } else {
                     showAlertView(localLanguageTextValue(.saveVideoError), self)
                 }
-                hud.hide()
             }
         }
     }
@@ -794,10 +791,7 @@ class ZLThumbnailViewController: UIViewController {
     func showEditImageVC(model: ZLPhotoModel) {
         let nav = self.navigationController as! ZLImageNavController
         
-        let hud = ZLProgressHUD(style: ZLPhotoConfiguration.default().hudStyle)
-        hud.show()
-        
-        hud.show()
+  
         ZLPhotoManager.fetchImage(for: model.asset, size: model.previewSize) { [weak self, weak nav] (image, isDegraded) in
             if !isDegraded {
                 if let image = image {
@@ -811,24 +805,17 @@ class ZLThumbnailViewController: UIViewController {
                 } else {
                     showAlertView(localLanguageTextValue(.imageLoadFailed), self)
                 }
-                hud.hide()
             }
         }
     }
     
     func showEditVideoVC(model: ZLPhotoModel) {
         let nav = self.navigationController as! ZLImageNavController
-        let hud = ZLProgressHUD(style: ZLPhotoConfiguration.default().hudStyle)
+
         
         var requestAvAssetID: PHImageRequestID?
         
-        hud.show(timeout: 20)
-        hud.timeoutBlock = { [weak self] in
-            showAlertView(localLanguageTextValue(.timeout), self)
-            if let _ = requestAvAssetID {
-                PHImageManager.default().cancelImageRequest(requestAvAssetID!)
-            }
-        }
+       
         
         func inner_showEditVideoVC(_ avAsset: AVAsset) {
      
@@ -836,7 +823,7 @@ class ZLThumbnailViewController: UIViewController {
         
         // 提前fetch一下 avasset
         requestAvAssetID = ZLPhotoManager.fetchAVAsset(forVideo: model.asset) { [weak self] (avAsset, _) in
-            hud.hide()
+ 
             if let _ = avAsset {
                 inner_showEditVideoVC(avAsset!)
             } else {

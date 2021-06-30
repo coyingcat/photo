@@ -381,10 +381,7 @@ public class ZLPhotoConfiguration: NSObject {
     
     /// The configuration for camera.
     @objc public var cameraConfiguration = ZLCameraConfiguration()
-    
-    /// Hud style. Defaults to lightBlur.
-    @objc public var hudStyle: ZLProgressHUD.HUDStyle = .lightBlur
-    
+
     /// Navigation bar blur effect.
     @available(*, deprecated, message: "Use navViewBlurEffectOfAlbumList, this property will be removed")
     @objc public var navViewBlurEffect: UIBlurEffect? {
