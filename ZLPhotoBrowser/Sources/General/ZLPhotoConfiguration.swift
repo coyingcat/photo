@@ -265,21 +265,6 @@ public class ZLPhotoConfiguration: NSObject {
     /// The default text sticker color. If this color not in textStickerTextColors, will pick the first color in textStickerTextColors as the default.
     @objc public var textStickerDefaultTextColor = UIColor.white
     
-    private var pri_filters: [ZLFilter] = ZLFilter.all
-    /// Filters for image editor.
-    @objc public var filters: [ZLFilter] {
-        set {
-            pri_filters = newValue
-        }
-        get {
-            if pri_filters.isEmpty {
-                return ZLFilter.all
-            } else {
-                return pri_filters
-            }
-        }
-    }
-    
 
     /// Show the image captured by the camera is displayed on the camera button inside the album. Defaults to false.
     @objc public var showCaptureImageOnTakePhotoBtn = false

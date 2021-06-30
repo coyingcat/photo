@@ -34,15 +34,12 @@ public class ZLEditImageModel: NSObject {
     public let angle: CGFloat
     
     public let selectRatio: ZLImageClipRatio?
-    
-    public let selectFilter: ZLFilter?
 
-    init(editRect: CGRect?, angle: CGFloat, selectRatio: ZLImageClipRatio?, selectFilter: ZLFilter) {
+    init(editRect: CGRect?, angle: CGFloat, selectRatio: ZLImageClipRatio?) {
 
         self.editRect = editRect
         self.angle = angle
         self.selectRatio = selectRatio
-        self.selectFilter = selectFilter
 
         super.init()
     }
@@ -131,8 +128,6 @@ public class ZLEditImageViewController: UIViewController {
     // 选择滤镜后对原图添加滤镜后的图片
     var filterImages: [String: UIImage] = [:]
     
-    var currentFilter: ZLFilter
-    
     var stickers: [UIView] = []
     
     var isScrolling = false
@@ -169,7 +164,7 @@ public class ZLEditImageViewController: UIViewController {
         if ZLPhotoConfiguration.default().showClipDirectlyIfOnlyHasClipTool, tools.count == 1, tools.contains(.clip) {
             let vc = ZLClipImageViewController(image: image, editRect: editModel?.editRect, angle: editModel?.angle ?? 0, selectRatio: editModel?.selectRatio)
             vc.clipDoneBlock = { (angle, editRect, ratio) in
-                let m = ZLEditImageModel(editRect: editRect, angle: angle, selectRatio: ratio, selectFilter: .normal)
+                let m = ZLEditImageModel(editRect: editRect, angle: angle, selectRatio: ratio)
                 completion?(image.clipImage(angle, editRect) ?? image, m)
             }
             vc.animate = animate
@@ -190,7 +185,6 @@ public class ZLEditImageViewController: UIViewController {
         self.originalImage = image
         self.editImage = image
         self.editRect = editModel?.editRect ?? CGRect(origin: .zero, size: image.size)
-        self.currentFilter = editModel?.selectFilter ?? .normal
         
         self.angle = editModel?.angle ?? 0
         self.selectRatio = editModel?.selectRatio
@@ -265,21 +259,15 @@ public class ZLEditImageViewController: UIViewController {
         }
         let thumbnailImage = self.originalImage.resize_vI(size) ?? self.originalImage
         
-        DispatchQueue.global().async {
-            self.thumbnailFilterImages = ZLPhotoConfiguration.default().filters.map { $0.applier?(thumbnailImage) ?? thumbnailImage }
-            
+    
             DispatchQueue.main.async {
                 self.filterCollectionView.reloadData()
                 self.filterCollectionView.performBatchUpdates {
                     
-                } completion: { (_) in
-                    if let index = ZLPhotoConfiguration.default().filters.firstIndex(where: { $0 == self.currentFilter }) {
-                        self.filterCollectionView.scrollToItem(at: IndexPath(row: index, section: 0), at: .centeredHorizontally, animated: false)
-                    }
-                }
+                } completion: { (_) in }
 
             }
-        }
+        
     }
     
     func resetContainerViewFrame() {
@@ -439,15 +427,9 @@ public class ZLEditImageViewController: UIViewController {
         
         if self.tools.contains(.mosaic) {
             // 之前选择过滤镜
-            if let applier = self.currentFilter.applier {
-                let image = applier(self.originalImage)
-                self.editImage = image
-                self.filterImages[self.currentFilter.name] = image
-                
-                self.mosaicImage = self.editImage.mosaicImage()
-            } else {
-                self.mosaicImage = self.originalImage.mosaicImage()
-            }
+        
+            self.mosaicImage = self.originalImage.mosaicImage()
+            
             
             self.mosaicImageLayer = CALayer()
             self.mosaicImageLayer?.contents = self.mosaicImage?.cgImage
@@ -558,7 +540,7 @@ public class ZLEditImageViewController: UIViewController {
     @objc func doneBtnClick() {
         
         var hasEdit = true
-        if self.editRect.size == self.imageSize, self.angle == 0, self.currentFilter.applier == nil {
+        if self.editRect.size == self.imageSize, self.angle == 0{
             hasEdit = false
         }
         
@@ -567,7 +549,7 @@ public class ZLEditImageViewController: UIViewController {
         if hasEdit {
             resImage = self.buildImage()
             resImage = resImage.clipImage(self.angle, self.editRect) ?? resImage
-            editModel = ZLEditImageModel(editRect: self.editRect, angle: self.angle, selectRatio: self.selectRatio, selectFilter: self.currentFilter)
+            editModel = ZLEditImageModel(editRect: self.editRect, angle: self.angle, selectRatio: self.selectRatio)
         }
         self.editFinishBlock?(resImage, editModel)
         
@@ -740,16 +722,8 @@ extension ZLEditImageViewController: UICollectionViewDataSource, UICollectionVie
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ZLFilterImageCell.zl_identifier(), for: indexPath) as! ZLFilterImageCell
             
             let image = self.thumbnailFilterImages[indexPath.row]
-            let filter = ZLPhotoConfiguration.default().filters[indexPath.row]
             
-            cell.nameLabel.text = filter.name
             cell.imageView.image = image
-            
-            if self.currentFilter === filter {
-                cell.nameLabel.textColor = .white
-            } else {
-                cell.nameLabel.textColor = zlRGB(160, 160, 160)
-            }
             
             return cell
         }
