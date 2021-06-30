@@ -392,17 +392,6 @@ public class ZLEditImageViewController: UIViewController {
         self.dismiss(animated: self.animate, completion: nil)
     }
     
-    func drawBtnClick() {
-        let isSelected = self.selectedTool != .draw
-        if isSelected {
-            self.selectedTool = .draw
-        } else {
-            self.selectedTool = nil
-        }
-        self.revokeBtn.isHidden = !isSelected
-      
-        self.filterCollectionView.isHidden = true
-    }
     
     func clipBtnClick() {
         let currentEditImage = self.buildImage()
@@ -436,34 +425,7 @@ public class ZLEditImageViewController: UIViewController {
             self.bottomShadowView.alpha = 0
         }
     }
-    
 
- 
-    
-    func mosaicBtnClick() {
-        let isSelected = self.selectedTool != .mosaic
-        if isSelected {
-            self.selectedTool = .mosaic
-        } else {
-            self.selectedTool = nil
-        }
-        
-        self.filterCollectionView.isHidden = true
-        self.revokeBtn.isHidden = !isSelected
-       
-    }
-    
-    func filterBtnClick() {
-        let isSelected = self.selectedTool != .filter
-        if isSelected {
-            self.selectedTool = .filter
-        } else {
-            self.selectedTool = nil
-        }
-        
-        self.revokeBtn.isHidden = true
-        self.filterCollectionView.isHidden = !isSelected
-    }
     
     @objc func doneBtnClick() {
         
@@ -624,25 +586,8 @@ extension ZLEditImageViewController: UICollectionViewDataSource, UICollectionVie
     }
     
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if collectionView == self.editToolCollectionView {
-            let toolType = self.tools[indexPath.row]
-            switch toolType {
-            case .draw:
-                self.drawBtnClick()
-            case .clip:
-                self.clipBtnClick()
-            case .imageSticker:
-                ()
-            case .textSticker:
-                ()
-            case .mosaic:
-                self.mosaicBtnClick()
-            case .filter:
-                self.filterBtnClick()
-            }
-        }
-        collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
-        collectionView.reloadData()
+            clipBtnClick()
+     
     }
     
 }
