@@ -280,7 +280,15 @@ class ZLPhotoPreviewController: UIViewController {
         }
         
         if config.showSelectedPhotoPreview {
-            let nav = self.navigationController as! ZLImageNavController
+            let nav: ZLImageNavController
+            if navigationController == nil{
+                nav = ZLImageNavController(rootViewController: self)
+            }
+            else{
+                nav = self.navigationController as! ZLImageNavController
+            }
+            
+            
             self.selPhotoPreview = ZLPhotoPreviewSelectedView(selModels: nav.arrSelectedModels, currentShowModel: self.arrDataSources[self.currentIndex])
             self.selPhotoPreview?.selectBlock = { [weak self] (model) in
                 self?.scrollToSelPreviewCell(model)
