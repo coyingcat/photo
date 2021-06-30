@@ -155,10 +155,6 @@ public class ZLEditImageViewController: UIViewController {
         return .portrait
     }
     
-    deinit {
-        zl_debugPrint("ZLEditImageViewController deinit")
-    }
-    
     @objc public class func showEditImageVC(parentVC: UIViewController?, animate: Bool = false, image: UIImage, editModel: ZLEditImageModel? = nil, completion: ( (UIImage, ZLEditImageModel?) -> Void )? ) {
         let tools = ZLPhotoConfiguration.default().editImageTools
         if ZLPhotoConfiguration.default().showClipDirectlyIfOnlyHasClipTool, tools.count == 1, tools.contains(.clip) {
@@ -205,9 +201,6 @@ public class ZLEditImageViewController: UIViewController {
         self.setupUI()
         
         self.rotationImageView()
-        if self.tools.contains(.filter) {
-            self.generateFilterImages()
-        }
     }
     
     public override func viewDidLayoutSubviews() {
@@ -235,8 +228,6 @@ public class ZLEditImageViewController: UIViewController {
         
         self.revokeBtn.frame = CGRect(x: self.view.frame.width - 15 - 35, y: 30, width: 35, height: 30)
         
-        self.filterCollectionView.frame = CGRect(x: 20, y: 0, width: self.view.frame.width-40, height: ZLEditImageViewController.filterColViewH)
-        
         let toolY: CGFloat = 85
         
         let doneBtnH = ZLLayout.bottomToolBtnH
@@ -247,28 +238,7 @@ public class ZLEditImageViewController: UIViewController {
         
     
     }
-    
-    func generateFilterImages() {
-        let size: CGSize
-        let ratio = (self.originalImage.size.width / self.originalImage.size.height)
-        let fixLength: CGFloat = 200
-        if ratio >= 1 {
-            size = CGSize(width: fixLength * ratio, height: fixLength)
-        } else {
-            size = CGSize(width: fixLength, height: fixLength / ratio)
-        }
-        let thumbnailImage = self.originalImage.resize_vI(size) ?? self.originalImage
-        
-    
-            DispatchQueue.main.async {
-                self.filterCollectionView.reloadData()
-                self.filterCollectionView.performBatchUpdates {
-                    
-                } completion: { (_) in }
 
-            }
-        
-    }
     
     func resetContainerViewFrame() {
         self.scrollView.setZoomScale(1, animated: true)
@@ -378,22 +348,6 @@ public class ZLEditImageViewController: UIViewController {
         self.doneBtn.layer.masksToBounds = true
         self.doneBtn.layer.cornerRadius = ZLLayout.bottomToolBtnCornerRadius
         self.bottomShadowView.addSubview(self.doneBtn)
-        
-
-        let filterLayout = UICollectionViewFlowLayout()
-        filterLayout.itemSize = CGSize(width: ZLEditImageViewController.filterColViewH-20, height: ZLEditImageViewController.filterColViewH)
-        filterLayout.minimumLineSpacing = 15
-        filterLayout.minimumInteritemSpacing = 15
-        filterLayout.scrollDirection = .horizontal
-        self.filterCollectionView = UICollectionView(frame: .zero, collectionViewLayout: filterLayout)
-        self.filterCollectionView.backgroundColor = .clear
-        self.filterCollectionView.delegate = self
-        self.filterCollectionView.dataSource = self
-        self.filterCollectionView.isHidden = true
-        self.filterCollectionView.showsHorizontalScrollIndicator = false
-        self.bottomShadowView.addSubview(self.filterCollectionView)
-        
-        ZLFilterImageCell.zl_register(self.filterCollectionView)
         
         self.revokeBtn = UIButton(type: .custom)
         self.revokeBtn.setImage(getImage("zl_revoke_disable"), for: .disabled)
@@ -701,15 +655,12 @@ extension ZLEditImageViewController: UIScrollViewDelegate {
 extension ZLEditImageViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if collectionView == self.editToolCollectionView {
-            return self.tools.count
-        }else {
-            return self.thumbnailFilterImages.count
-        }
+      
+        return 1
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if collectionView == self.editToolCollectionView {
+
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ZLEditToolCell.zl_identifier(), for: indexPath) as! ZLEditToolCell
             
             let toolType = self.tools[indexPath.row]
@@ -718,15 +669,7 @@ extension ZLEditImageViewController: UICollectionViewDataSource, UICollectionVie
             cell.icon.isHighlighted = toolType == self.selectedTool
             
             return cell
-        } else {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ZLFilterImageCell.zl_identifier(), for: indexPath) as! ZLFilterImageCell
-            
-            let image = self.thumbnailFilterImages[indexPath.row]
-            
-            cell.imageView.image = image
-            
-            return cell
-        }
+      
     }
     
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -856,37 +799,3 @@ class ZLEditToolCell: UICollectionViewCell {
     
 }
 
-
-
-// MARK: filter cell
-class ZLFilterImageCell: UICollectionViewCell {
-    
-    var nameLabel: UILabel!
-    
-    var imageView: UIImageView!
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        self.nameLabel = UILabel(frame: CGRect(x: 0, y: self.bounds.height-20, width: self.bounds.width, height: 20))
-        self.nameLabel.font = getFont(12)
-        self.nameLabel.textColor = .white
-        self.nameLabel.textAlignment = .center
-        self.nameLabel.layer.shadowColor = UIColor.black.withAlphaComponent(0.3).cgColor
-        self.nameLabel.layer.shadowOffset = .zero
-        self.nameLabel.layer.shadowOpacity = 1
-        self.nameLabel.adjustsFontSizeToFitWidth = true
-        self.nameLabel.minimumScaleFactor = 0.5
-        self.contentView.addSubview(self.nameLabel)
-        
-        self.imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: self.bounds.width, height: self.bounds.width))
-        self.imageView.contentMode = .scaleAspectFill
-        self.imageView.clipsToBounds = true
-        self.contentView.addSubview(self.imageView)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-}

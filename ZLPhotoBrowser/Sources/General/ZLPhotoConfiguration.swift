@@ -206,11 +206,7 @@ public class ZLPhotoConfiguration: NSObject {
             pri_editImageTools = newValue
         }
         get {
-            if pri_editImageTools.isEmpty {
-                return [.draw, .clip, .imageSticker, .textSticker, .mosaic, .filter]
-            } else {
-                return pri_editImageTools
-            }
+            return [.clip]
         }
     }
     
