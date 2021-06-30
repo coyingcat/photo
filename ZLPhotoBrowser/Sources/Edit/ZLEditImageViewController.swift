@@ -29,8 +29,6 @@ import UIKit
 public class ZLEditImageModel: NSObject {
     
     
-    public let mosaicPaths: [ZLMosaicPath]
-    
     public let editRect: CGRect?
     
     public let angle: CGFloat
@@ -39,9 +37,8 @@ public class ZLEditImageModel: NSObject {
     
     public let selectFilter: ZLFilter?
 
-    init(mosaicPaths: [ZLMosaicPath], editRect: CGRect?, angle: CGFloat, selectRatio: ZLImageClipRatio?, selectFilter: ZLFilter) {
-    
-        self.mosaicPaths = mosaicPaths
+    init(editRect: CGRect?, angle: CGFloat, selectRatio: ZLImageClipRatio?, selectFilter: ZLFilter) {
+
         self.editRect = editRect
         self.angle = angle
         self.selectRatio = selectRatio
@@ -126,8 +123,6 @@ public class ZLEditImageViewController: UIViewController {
     
     var drawLineWidth: CGFloat = 5
     
-    var mosaicPaths: [ZLMosaicPath]
-    
     var mosaicLineWidth: CGFloat = 25
     
     // collectionview 中的添加滤镜的小图
@@ -174,7 +169,7 @@ public class ZLEditImageViewController: UIViewController {
         if ZLPhotoConfiguration.default().showClipDirectlyIfOnlyHasClipTool, tools.count == 1, tools.contains(.clip) {
             let vc = ZLClipImageViewController(image: image, editRect: editModel?.editRect, angle: editModel?.angle ?? 0, selectRatio: editModel?.selectRatio)
             vc.clipDoneBlock = { (angle, editRect, ratio) in
-                let m = ZLEditImageModel(mosaicPaths: [], editRect: editRect, angle: angle, selectRatio: ratio, selectFilter: .normal)
+                let m = ZLEditImageModel(editRect: editRect, angle: angle, selectRatio: ratio, selectFilter: .normal)
                 completion?(image.clipImage(angle, editRect) ?? image, m)
             }
             vc.animate = animate
@@ -196,7 +191,7 @@ public class ZLEditImageViewController: UIViewController {
         self.editImage = image
         self.editRect = editModel?.editRect ?? CGRect(origin: .zero, size: image.size)
         self.currentFilter = editModel?.selectFilter ?? .normal
-        self.mosaicPaths = editModel?.mosaicPaths ?? []
+        
         self.angle = editModel?.angle ?? 0
         self.selectRatio = editModel?.selectRatio
         
@@ -256,9 +251,7 @@ public class ZLEditImageViewController: UIViewController {
         
         self.editToolCollectionView.frame = CGRect(x: 20, y: toolY, width: self.view.bounds.width - 20 - 20 - doneBtnW - 20, height: 30)
         
-        if !self.mosaicPaths.isEmpty {
-            self.generateNewMosaicImage()
-        }
+    
     }
     
     func generateFilterImages() {
@@ -547,7 +540,7 @@ public class ZLEditImageViewController: UIViewController {
         
         self.filterCollectionView.isHidden = true
         self.revokeBtn.isHidden = !isSelected
-        self.revokeBtn.isEnabled = self.mosaicPaths.count > 0
+       
     }
     
     func filterBtnClick() {
@@ -565,7 +558,7 @@ public class ZLEditImageViewController: UIViewController {
     @objc func doneBtnClick() {
         
         var hasEdit = true
-        if self.editRect.size == self.imageSize, self.angle == 0, self.mosaicPaths.isEmpty,  self.currentFilter.applier == nil {
+        if self.editRect.size == self.imageSize, self.angle == 0, self.currentFilter.applier == nil {
             hasEdit = false
         }
         
@@ -574,7 +567,7 @@ public class ZLEditImageViewController: UIViewController {
         if hasEdit {
             resImage = self.buildImage()
             resImage = resImage.clipImage(self.angle, self.editRect) ?? resImage
-            editModel = ZLEditImageModel(mosaicPaths: self.mosaicPaths, editRect: self.editRect, angle: self.angle, selectRatio: self.selectRatio, selectFilter: self.currentFilter)
+            editModel = ZLEditImageModel(editRect: self.editRect, angle: self.angle, selectRatio: self.selectRatio, selectFilter: self.currentFilter)
         }
         self.editFinishBlock?(resImage, editModel)
         
@@ -620,53 +613,6 @@ public class ZLEditImageViewController: UIViewController {
         let r = self.containerView.convert(CGRect(x: x, y: y, width: w, height: h), to: self.stickersContainer)
         let originFrame = CGRect(x: r.minX + (r.width - size.width) / 2, y: r.minY + (r.height - size.height) / 2, width: size.width, height: size.height)
         return originFrame
-    }
-    
-    
-    func generateNewMosaicImage() {
-        UIGraphicsBeginImageContextWithOptions(self.originalImage.size, false, self.originalImage.scale)
-        if self.tools.contains(.filter), let image = self.filterImages[self.currentFilter.name] {
-            image.draw(at: .zero)
-        } else {
-            self.originalImage.draw(at: .zero)
-        }
-        let context = UIGraphicsGetCurrentContext()
-        
-        self.mosaicPaths.forEach { (path) in
-            context?.move(to: path.startPoint)
-            path.linePoints.forEach { (point) in
-                context?.addLine(to: point)
-            }
-            context?.setLineWidth(path.path.lineWidth / path.ratio)
-            context?.setLineCap(.round)
-            context?.setLineJoin(.round)
-            context?.setBlendMode(.clear)
-            context?.strokePath()
-        }
-        
-        var midImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        guard let midCgImage = midImage?.cgImage else {
-            return
-        }
-        
-        midImage = UIImage(cgImage: midCgImage, scale: self.editImage.scale, orientation: .up)
-        
-        UIGraphicsBeginImageContextWithOptions(self.originalImage.size, false, self.originalImage.scale)
-        self.mosaicImage?.draw(at: .zero)
-        midImage?.draw(at: .zero)
-        
-        let temp = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        guard let cgi = temp?.cgImage else {
-            return
-        }
-        let image = UIImage(cgImage: cgi, scale: self.editImage.scale, orientation: .up)
-        
-        self.editImage = image
-        self.imageView.image = self.editImage
-        
-        self.mosaicImageLayerMaskLayer?.path = nil
     }
     
     func buildImage() -> UIImage {
@@ -826,35 +772,6 @@ extension ZLEditImageViewController: UICollectionViewDataSource, UICollectionVie
             case .filter:
                 self.filterBtnClick()
             }
-        }else {
-            self.currentFilter = ZLPhotoConfiguration.default().filters[indexPath.row]
-            if let image = self.filterImages[self.currentFilter.name] {
-                self.editImage = image
-            } else {
-                let image = self.currentFilter.applier?(self.originalImage) ?? self.originalImage
-                self.editImage = image
-                self.filterImages[self.currentFilter.name] = image
-            }
-            if self.tools.contains(.mosaic) {
-                self.mosaicImage = self.editImage.mosaicImage()
-                
-                self.mosaicImageLayer?.removeFromSuperlayer()
-                
-                self.mosaicImageLayer = CALayer()
-                self.mosaicImageLayer?.frame = self.imageView.bounds
-                self.mosaicImageLayer?.contents = self.mosaicImage?.cgImage
-                self.imageView.layer.insertSublayer(self.mosaicImageLayer!, below: self.mosaicImageLayerMaskLayer)
-                
-                self.mosaicImageLayer?.mask = self.mosaicImageLayerMaskLayer
-                
-                if self.mosaicPaths.isEmpty {
-                    self.imageView.image = self.editImage
-                } else {
-                    self.generateNewMosaicImage()
-                }
-            } else {
-                self.imageView.image = self.editImage
-            }
         }
         collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
         collectionView.reloadData()
@@ -966,45 +883,6 @@ class ZLEditToolCell: UICollectionViewCell {
 }
 
 
-// MARK: draw color cell
-
-class ZLDrawColorCell: UICollectionViewCell {
-    
-    var bgWhiteView: UIView!
-    
-    var colorView: UIView!
-    
-    var color: UIColor! {
-        didSet {
-            self.colorView.backgroundColor = color
-        }
-    }
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        self.bgWhiteView = UIView()
-        self.bgWhiteView.backgroundColor = .white
-        self.bgWhiteView.layer.cornerRadius = 10
-        self.bgWhiteView.layer.masksToBounds = true
-        self.bgWhiteView.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
-        self.bgWhiteView.center = CGPoint(x: self.bounds.midX, y: self.bounds.midY)
-        self.contentView.addSubview(self.bgWhiteView)
-        
-        self.colorView = UIView()
-        self.colorView.layer.cornerRadius = 8
-        self.colorView.layer.masksToBounds = true
-        self.colorView.frame = CGRect(x: 0, y: 0, width: 16, height: 16)
-        self.colorView.center = CGPoint(x: self.bounds.midX, y: self.bounds.midY)
-        self.contentView.addSubview(self.colorView)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-}
-
 
 // MARK: filter cell
 class ZLFilterImageCell: UICollectionViewCell {
@@ -1035,39 +913,6 @@ class ZLFilterImageCell: UICollectionViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-}
-
-
-// MARK: 马赛克path
-
-public class ZLMosaicPath: NSObject {
-    
-    let path: UIBezierPath
-    
-    let ratio: CGFloat
-    
-    let startPoint: CGPoint
-    
-    var linePoints: [CGPoint] = []
-    
-    init(pathWidth: CGFloat, ratio: CGFloat, startPoint: CGPoint) {
-        self.path = UIBezierPath()
-        self.path.lineWidth = pathWidth
-        self.path.lineCapStyle = .round
-        self.path.lineJoinStyle = .round
-        self.path.move(to: startPoint)
-        
-        self.ratio = ratio
-        self.startPoint = CGPoint(x: startPoint.x / ratio, y: startPoint.y / ratio)
-        
-        super.init()
-    }
-    
-    func addLine(to point: CGPoint) {
-        self.path.addLine(to: point)
-        self.linePoints.append(CGPoint(x: point.x / self.ratio, y: point.y / self.ratio))
     }
     
 }
