@@ -118,18 +118,12 @@ public class ZLEditImageViewController: UIViewController {
     
     var editToolCollectionView: UICollectionView!
     
-    var drawColorCollectionView: UICollectionView!
-    
     var filterCollectionView: UICollectionView!
     
     var ashbinView: UIView!
     
     var ashbinImgView: UIImageView!
     
-    let drawColors: [UIColor]
-    
-    var currentDrawColor = ZLPhotoConfiguration.default().editImageDefaultDrawColor
-
     var drawLineWidth: CGFloat = 5
     
     var mosaicPaths: [ZLMosaicPath]
@@ -201,7 +195,6 @@ public class ZLEditImageViewController: UIViewController {
         self.originalImage = image
         self.editImage = image
         self.editRect = editModel?.editRect ?? CGRect(origin: .zero, size: image.size)
-        self.drawColors = ZLPhotoConfiguration.default().editImageDrawColors
         self.currentFilter = editModel?.selectFilter ?? .normal
         self.mosaicPaths = editModel?.mosaicPaths ?? []
         self.angle = editModel?.angle ?? 0
@@ -211,10 +204,6 @@ public class ZLEditImageViewController: UIViewController {
         self.tools = ZLPhotoConfiguration.default().editImageTools
         
         super.init(nibName: nil, bundle: nil)
-        
-        if !self.drawColors.contains(self.currentDrawColor) {
-            self.currentDrawColor = self.drawColors.first!
-        }
     }
     
     required init?(coder: NSCoder) {
@@ -255,7 +244,6 @@ public class ZLEditImageViewController: UIViewController {
         self.bottomShadowView.frame = CGRect(x: 0, y: self.view.frame.height-140-insets.bottom, width: self.view.frame.width, height: 140+insets.bottom)
         self.bottomShadowLayer.frame = self.bottomShadowView.bounds
         
-        self.drawColorCollectionView.frame = CGRect(x: 20, y: 20, width: self.view.frame.width - 80, height: 50)
         self.revokeBtn.frame = CGRect(x: self.view.frame.width - 15 - 35, y: 30, width: 35, height: 30)
         
         self.filterCollectionView.frame = CGRect(x: 20, y: 0, width: self.view.frame.width-40, height: ZLEditImageViewController.filterColViewH)
@@ -270,10 +258,6 @@ public class ZLEditImageViewController: UIViewController {
         
         if !self.mosaicPaths.isEmpty {
             self.generateNewMosaicImage()
-        }
-        
-        if let index = self.drawColors.firstIndex(where: { $0 == self.currentDrawColor}) {
-            self.drawColorCollectionView.scrollToItem(at: IndexPath(row: index, section: 0), at: .centeredHorizontally, animated: false)
         }
     }
     
@@ -414,22 +398,7 @@ public class ZLEditImageViewController: UIViewController {
         self.doneBtn.layer.cornerRadius = ZLLayout.bottomToolBtnCornerRadius
         self.bottomShadowView.addSubview(self.doneBtn)
         
-        let drawColorLayout = UICollectionViewFlowLayout()
-        drawColorLayout.itemSize = CGSize(width: 30, height: 30)
-        drawColorLayout.minimumLineSpacing = 15
-        drawColorLayout.minimumInteritemSpacing = 15
-        drawColorLayout.scrollDirection = .horizontal
-        drawColorLayout.sectionInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
-        self.drawColorCollectionView = UICollectionView(frame: .zero, collectionViewLayout: drawColorLayout)
-        self.drawColorCollectionView.backgroundColor = .clear
-        self.drawColorCollectionView.delegate = self
-        self.drawColorCollectionView.dataSource = self
-        self.drawColorCollectionView.isHidden = true
-        self.drawColorCollectionView.showsHorizontalScrollIndicator = false
-        self.bottomShadowView.addSubview(self.drawColorCollectionView)
-        
-        ZLDrawColorCell.zl_register(self.drawColorCollectionView)
-        
+
         let filterLayout = UICollectionViewFlowLayout()
         filterLayout.itemSize = CGSize(width: ZLEditImageViewController.filterColViewH-20, height: ZLEditImageViewController.filterColViewH)
         filterLayout.minimumLineSpacing = 15
@@ -527,7 +496,6 @@ public class ZLEditImageViewController: UIViewController {
         } else {
             self.selectedTool = nil
         }
-        self.drawColorCollectionView.isHidden = !isSelected
         self.revokeBtn.isHidden = !isSelected
       
         self.filterCollectionView.isHidden = true
@@ -577,7 +545,6 @@ public class ZLEditImageViewController: UIViewController {
             self.selectedTool = nil
         }
         
-        self.drawColorCollectionView.isHidden = true
         self.filterCollectionView.isHidden = true
         self.revokeBtn.isHidden = !isSelected
         self.revokeBtn.isEnabled = self.mosaicPaths.count > 0
@@ -591,7 +558,6 @@ public class ZLEditImageViewController: UIViewController {
             self.selectedTool = nil
         }
         
-        self.drawColorCollectionView.isHidden = true
         self.revokeBtn.isHidden = true
         self.filterCollectionView.isHidden = !isSelected
     }
@@ -809,9 +775,7 @@ extension ZLEditImageViewController: UICollectionViewDataSource, UICollectionVie
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == self.editToolCollectionView {
             return self.tools.count
-        } else if collectionView == self.drawColorCollectionView {
-            return self.drawColors.count
-        } else {
+        }else {
             return self.thumbnailFilterImages.count
         }
     }
@@ -824,18 +788,6 @@ extension ZLEditImageViewController: UICollectionViewDataSource, UICollectionVie
             cell.icon.isHighlighted = false
             cell.toolType = toolType
             cell.icon.isHighlighted = toolType == self.selectedTool
-            
-            return cell
-        } else if collectionView == self.drawColorCollectionView {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ZLDrawColorCell.zl_identifier(), for: indexPath) as! ZLDrawColorCell
-            
-            let c = self.drawColors[indexPath.row]
-            cell.color = c
-            if c == self.currentDrawColor {
-                cell.bgWhiteView.layer.transform = CATransform3DMakeScale(1.2, 1.2, 1)
-            } else {
-                cell.bgWhiteView.layer.transform = CATransform3DIdentity
-            }
             
             return cell
         } else {
@@ -874,9 +826,7 @@ extension ZLEditImageViewController: UICollectionViewDataSource, UICollectionVie
             case .filter:
                 self.filterBtnClick()
             }
-        } else if collectionView == self.drawColorCollectionView {
-            self.currentDrawColor = self.drawColors[indexPath.row]
-        } else {
+        }else {
             self.currentFilter = ZLPhotoConfiguration.default().filters[indexPath.row]
             if let image = self.filterImages[self.currentFilter.name] {
                 self.editImage = image
