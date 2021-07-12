@@ -59,8 +59,6 @@ public class ZLPhotoPreviewSheet: UIView {
     
     private var preview = false
     
-    private var animate = true
-    
     private var senderTabBarIsHidden: Bool?
     
     private var baseViewHeight: CGFloat = 0
@@ -268,7 +266,6 @@ public class ZLPhotoPreviewSheet: UIView {
     
     func show(preview: Bool, animate: Bool, sender: UIViewController) {
         self.preview = preview
-        self.animate = animate
         self.sender = sender
         
         let status = PHPhotoLibrary.authorizationStatus()
@@ -334,36 +331,14 @@ public class ZLPhotoPreviewSheet: UIView {
             tabBar.isHidden =  true
         }
         
-        if self.animate {
-            self.backgroundColor = UIColor.previewBgColor.withAlphaComponent(0)
-            var frame = self.baseView.frame
-            frame.origin.y = self.bounds.height
-            self.baseView.frame = frame
-            UIView.animate(withDuration: 0.2) {
-                self.backgroundColor = UIColor.previewBgColor
-                frame.origin.y -= self.baseViewHeight
-                self.baseView.frame = frame
-            }
-        }
     }
     
     func hide(completion: ( () -> Void )? = nil) {
-        if self.animate {
-            var frame = self.baseView.frame
-            frame.origin.y += self.baseViewHeight
-            UIView.animate(withDuration: 0.2, animations: {
-                self.backgroundColor = UIColor.previewBgColor.withAlphaComponent(0)
-                self.baseView.frame = frame
-            }) { (_) in
-                self.isHidden = true
-                completion?()
-                self.removeFromSuperview()
-            }
-        } else {
+ 
             self.isHidden = true
             completion?()
             self.removeFromSuperview()
-        }
+        
         
         if let temp = self.senderTabBarIsHidden {
             self.sender?.tabBarController?.tabBar.isHidden = temp
@@ -419,7 +394,7 @@ public class ZLPhotoPreviewSheet: UIView {
     
     @objc func photoLibraryBtnClick() {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
-        self.animate = false
+
         self.showThumbnailViewController()
     }
     
@@ -523,10 +498,6 @@ public class ZLPhotoPreviewSheet: UIView {
             }
         }
         
-        
-        var timeout = false
-      
-        
         let callback = { [weak self] (sucImages: [UIImage], sucAssets: [PHAsset], errorAssets: [PHAsset], errorIndexs: [Int]) in
      
             
@@ -539,7 +510,6 @@ public class ZLPhotoPreviewSheet: UIView {
             
             if let vc = viewController {
                 self?.isHidden = true
-                self?.animate = false
                 vc.dismiss(animated: true) {
                     call()
                     self?.hide()
@@ -568,8 +538,7 @@ public class ZLPhotoPreviewSheet: UIView {
         let totalCount = self.arrSelectedModels.count
         for (i, m) in self.arrSelectedModels.enumerated() {
             let operation = ZLFetchImageOperation(model: m, isOriginal: self.isSelectOriginal) { (image, asset) in
-                guard !timeout else { return }
-                
+               
                 sucCount += 1
                 
                 if let image = image {
@@ -646,25 +615,7 @@ public class ZLPhotoPreviewSheet: UIView {
         }
     }
     
-    func showEditVideoVC(model: ZLPhotoModel) {
-   
-        var requestAvAssetID: PHImageRequestID?
-    
-        
-        func inner_showEditVideoVC(_ avAsset: AVAsset) {
-            
-        }
-        
-        // 提前fetch一下 avasset
-        requestAvAssetID = ZLPhotoManager.fetchAVAsset(forVideo: model.asset) { [weak self] (avAsset, _) in
-          
-            if let _ = avAsset {
-                inner_showEditVideoVC(avAsset!)
-            } else {
-                showAlertView(localLanguageTextValue(.timeout), self?.sender)
-            }
-        }
-    }
+
     
     func getImageNav(rootViewController: UIViewController) -> ZLImageNavController {
         let nav = ZLImageNavController(rootViewController: rootViewController)
@@ -885,7 +836,7 @@ extension ZLPhotoPreviewSheet: UICollectionViewDataSource, UICollectionViewDeleg
         if canEditImage, flag {
             self.showEditImageVC(model: model)
         } else if canEditVideo, flag {
-            self.showEditVideoVC(model: model)
+           
         }
         
         return flag && (canEditImage || canEditVideo)
