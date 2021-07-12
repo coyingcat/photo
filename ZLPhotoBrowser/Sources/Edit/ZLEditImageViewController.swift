@@ -79,9 +79,6 @@ public class ZLEditImageViewController: UIViewController {
     // Show image.
     var imageView: UIImageView!
     
-    // Show draw lines.
-    var drawingImageView: UIImageView!
-    
     // 处理好的马赛克图片
     var mosaicImage: UIImage?
     
@@ -251,8 +248,7 @@ public class ZLEditImageViewController: UIViewController {
         self.imageView.frame = CGRect(origin: scaleImageOrigin, size: scaleImageSize)
         self.mosaicImageLayer?.frame = self.imageView.bounds
         self.mosaicImageLayerMaskLayer?.frame = self.imageView.bounds
-        self.drawingImageView.frame = self.imageView.frame
-        
+
         // 针对于长图的优化
         if (self.editRect.height / self.editRect.width) > (self.view.frame.height / self.view.frame.width * 1.1) {
             let widthScale = self.view.frame.width / w
@@ -285,12 +281,6 @@ public class ZLEditImageViewController: UIViewController {
         self.imageView.clipsToBounds = true
         self.imageView.backgroundColor = .black
         self.containerView.addSubview(self.imageView)
-        
-        self.drawingImageView = UIImageView()
-        self.drawingImageView.contentMode = .scaleAspectFit
-        self.drawingImageView.isUserInteractionEnabled = true
-        self.containerView.addSubview(self.drawingImageView)
-
         
         let color1 = UIColor.black.withAlphaComponent(0.35).cgColor
         let color2 = UIColor.black.withAlphaComponent(0).cgColor
@@ -375,7 +365,6 @@ public class ZLEditImageViewController: UIViewController {
     func rotationImageView() {
         let transform = CGAffineTransform(rotationAngle: self.angle.toPi)
         self.imageView.transform = transform
-        self.drawingImageView.transform = transform
     }
     
     @objc func cancelBtnClick() {
@@ -384,7 +373,7 @@ public class ZLEditImageViewController: UIViewController {
     
     
     func clipBtnClick() {
-        let currentEditImage = self.buildImage()
+        let currentEditImage = editImage
         let vc = ZLClipImageViewController(image: currentEditImage, editRect: self.editRect, angle: self.angle, selectRatio: self.selectRatio)
         let rect = self.scrollView.convert(self.containerView.frame, to: self.view)
         vc.presentAnimateFrame = rect
@@ -426,7 +415,7 @@ public class ZLEditImageViewController: UIViewController {
         var resImage = self.originalImage
         var editModel: ZLEditImageModel? = nil
         if hasEdit {
-            resImage = self.buildImage()
+            resImage = editImage
             resImage = resImage.clipImage(self.angle, self.editRect) ?? resImage
             editModel = ZLEditImageModel(editRect: self.editRect, angle: self.angle, selectRatio: self.selectRatio)
         }
@@ -435,23 +424,6 @@ public class ZLEditImageViewController: UIViewController {
         self.dismiss(animated: self.animate, completion: nil)
     }
   
-
-
-    func buildImage() -> UIImage {
-        let imageSize = self.originalImage.size
-        
-        UIGraphicsBeginImageContextWithOptions(self.editImage.size, false, self.editImage.scale)
-        self.editImage.draw(at: .zero)
-        
-        self.drawingImageView.image?.draw(in: CGRect(origin: .zero, size: imageSize))
-
-        let temp = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        guard let cgi = temp?.cgImage else {
-            return self.editImage
-        }
-        return UIImage(cgImage: cgi, scale: self.editImage.scale, orientation: .up)
-    }
     
     func finishClipDismissAnimate() {
         self.scrollView.alpha = 1
