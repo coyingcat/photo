@@ -399,16 +399,6 @@ class ZLPhotoPreviewController: UIViewController {
         self.selPhotoPreview?.isHidden = selCount == 0
         self.refreshBottomViewFrame()
         
-        var hideEditBtn = true
-        if selCount < config.maxSelectCount || nav.arrSelectedModels.contains(where: { $0 == currentModel }) {
-            if config.allowEditImage && (currentModel.type == .image || (currentModel.type == .gif && !config.allowSelectGif) || (currentModel.type == .livePhoto && !config.allowSelectLivePhoto)) {
-                hideEditBtn = false
-            }
-            if config.allowEditVideo && currentModel.type == .video && (selCount == 0 || (selCount == 1 && nav.arrSelectedModels.first == currentModel)) {
-                hideEditBtn = false
-            }
-        }
-        
         if ZLPhotoConfiguration.default().allowSelectOriginal && ZLPhotoConfiguration.default().allowSelectImage {
             self.originalBtn.isHidden = !((currentModel.type == .image) || (currentModel.type == .livePhoto && !config.allowSelectLivePhoto) || (currentModel.type == .gif && !config.allowSelectGif))
         }
@@ -473,18 +463,6 @@ class ZLPhotoPreviewController: UIViewController {
                     } else {
                         showAlertView(localLanguageTextValue(.imageLoadFailed), self)
                     }
-                }
-            }
-        } else if model.type == .video || config.allowEditVideo {
-            var requestAvAssetID: PHImageRequestID?
-         
-            // fetch avasset
-            requestAvAssetID = ZLPhotoManager.fetchAVAsset(forVideo: model.asset) { [weak self] (avAsset, _) in
-       
-                if let av = avAsset {
-                    self?.showEditVideoVC(model: model, avAsset: av)
-                } else {
-                    showAlertView(localLanguageTextValue(.timeout), self)
                 }
             }
         }
