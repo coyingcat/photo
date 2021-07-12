@@ -54,8 +54,6 @@ public class ZLEditImageViewController: UIViewController {
     
     static let ashbinNormalBgColor = zlRGB(40, 40, 40).withAlphaComponent(0.8)
     
-    var animate = false
-    
     var originalImage: UIImage
     
     // 第一次进入界面时，布局后frame，裁剪dimiss动画使用
@@ -79,15 +77,6 @@ public class ZLEditImageViewController: UIViewController {
     // Show image.
     var imageView: UIImageView!
     
-    // 处理好的马赛克图片
-    var mosaicImage: UIImage?
-    
-    // 显示马赛克图片的layer
-    var mosaicImageLayer: CALayer?
-    
-    // 显示马赛克图片的layer的mask
-    var mosaicImageLayerMaskLayer: CAShapeLayer?
-    
     // 上方渐变阴影层
     var topShadowView: UIView!
     
@@ -102,11 +91,7 @@ public class ZLEditImageViewController: UIViewController {
     
     var revokeBtn: UIButton!
     
-    var selectedTool: ZLEditImageViewController.EditImageTool?
-    
     var editToolCollectionView: UICollectionView!
-    
-    var filterCollectionView: UICollectionView!
     
     var isScrolling = false
     
@@ -147,7 +132,6 @@ public class ZLEditImageViewController: UIViewController {
             vc.editFinishBlock = {  (ei, editImageModel) in
                 completion?(ei, editImageModel)
             }
-            vc.animate = animate
             vc.modalPresentationStyle = .fullScreen
             parentVC?.present(vc, animated: animate, completion: nil)
         }
@@ -230,8 +214,6 @@ public class ZLEditImageViewController: UIViewController {
         let scaleImageOrigin = CGPoint(x: -self.editRect.origin.x*ratio, y: -self.editRect.origin.y*ratio)
         let scaleImageSize = CGSize(width: self.imageSize.width * ratio, height: self.imageSize.height * ratio)
         self.imageView.frame = CGRect(origin: scaleImageOrigin, size: scaleImageSize)
-        self.mosaicImageLayer?.frame = self.imageView.bounds
-        self.mosaicImageLayerMaskLayer?.frame = self.imageView.bounds
 
         // 针对于长图的优化
         if (self.editRect.height / self.editRect.width) > (self.view.frame.height / self.view.frame.width * 1.1) {
@@ -330,7 +312,7 @@ public class ZLEditImageViewController: UIViewController {
     }
     
     @objc func cancelBtnClick() {
-        self.dismiss(animated: self.animate, completion: nil)
+        self.dismiss(animated: false, completion: nil)
     }
     
     
@@ -383,7 +365,7 @@ public class ZLEditImageViewController: UIViewController {
         }
         self.editFinishBlock?(resImage, editModel)
         
-        self.dismiss(animated: self.animate, completion: nil)
+        self.dismiss(animated: false, completion: nil)
     }
   
     
@@ -411,9 +393,7 @@ extension ZLEditImageViewController: UICollectionViewDataSource, UICollectionVie
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ZLEditToolCell.zl_identifier(), for: indexPath) as! ZLEditToolCell
             
             let toolType = self.tools[indexPath.row]
-            cell.icon.isHighlighted = false
             cell.toolType = toolType
-            cell.icon.isHighlighted = toolType == self.selectedTool
             
             return cell
       
