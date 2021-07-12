@@ -81,8 +81,6 @@ class ZLClipImageViewController: UIViewController {
     
     var selectedRatio: ZLImageClipRatio
     
-    var thumbnailImage: UIImage?
-    
     lazy var maxClipFrame: CGRect = {
         var insets = deviceSafeAreaInsets()
         insets.top +=  20
@@ -95,8 +93,6 @@ class ZLClipImageViewController: UIViewController {
     }()
     
     var minClipSize = CGSize(width: 45, height: 45)
-    
-    var resetTimer: Timer?
     
     var dismissAnimateFromRect: CGRect = .zero
     
@@ -146,7 +142,6 @@ class ZLClipImageViewController: UIViewController {
         super.viewDidLoad()
         
         self.setupUI()
-        self.generateThumbnailImage()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -285,17 +280,6 @@ class ZLClipImageViewController: UIViewController {
         self.rotateBtn.alpha = 0
     }
     
-    func generateThumbnailImage() {
-        let size: CGSize
-        let ratio = (self.editImage.size.width / self.editImage.size.height)
-        let fixLength: CGFloat = 100
-        if ratio >= 1 {
-            size = CGSize(width: fixLength * ratio, height: fixLength)
-        } else {
-            size = CGSize(width: fixLength, height: fixLength / ratio)
-        }
-        self.thumbnailImage = self.editImage.resize_vI(size)
-    }
     
     func calculateClipRect() {
         if self.selectedRatio.whRatio == 0 {
@@ -475,8 +459,6 @@ class ZLClipImageViewController: UIViewController {
             self.containerView.alpha = 1
             self.isRotating = false
         }
-        
-        self.generateThumbnailImage()
     }
 
     func clipImage() -> (clipImage: UIImage, editRect: CGRect) {

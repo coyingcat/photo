@@ -46,12 +46,6 @@ public class ZLEditImageModel: NSObject {
 }
 
 public class ZLEditImageViewController: UIViewController {
-
-    static let filterColViewH: CGFloat = 80
-    
-    static let maxDrawLineImageWidth: CGFloat = 600
-    
-    static let ashbinNormalBgColor = zlRGB(40, 40, 40).withAlphaComponent(0.8)
     
     var originalImage: UIImage
     
