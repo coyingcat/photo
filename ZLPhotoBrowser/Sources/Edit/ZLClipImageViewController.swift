@@ -89,8 +89,6 @@ class ZLClipImageViewController: UIViewController {
     
     var rotateBtn: UIButton!
     
-    var clipRatioColView: UICollectionView!
-    
     var shouldLayout = true
     
     var panEdge: ZLClipImageViewController.ClipPanEdge = .none
@@ -239,9 +237,6 @@ class ZLClipImageViewController: UIViewController {
         let ratioColViewY = self.bottomToolView.frame.minY - ZLClipImageViewController.clipRatioItemSize.height - 5
         self.rotateBtn.frame = CGRect(x: 30, y: ratioColViewY + (ZLClipImageViewController.clipRatioItemSize.height-25)/2, width: 25, height: 25)
         let ratioColViewX = self.rotateBtn.frame.maxX + 15
-        self.clipRatioColView.frame = CGRect(x: ratioColViewX, y: ratioColViewY, width: self.view.bounds.width - ratioColViewX, height: 70)
-        
-   
     }
     
     func setupUI() {
@@ -309,16 +304,7 @@ class ZLClipImageViewController: UIViewController {
         layout.itemSize = ZLClipImageViewController.clipRatioItemSize
         layout.scrollDirection = .horizontal
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 20)
-        self.clipRatioColView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        self.clipRatioColView.delegate = self
-        self.clipRatioColView.dataSource = self
-        self.clipRatioColView.backgroundColor = .clear
-        self.clipRatioColView.isHidden = false
-        self.clipRatioColView.showsHorizontalScrollIndicator = false
-        self.view.addSubview(self.clipRatioColView)
-        ZLImageClipRatioCell.zl_register(self.clipRatioColView)
-        
-        
+
         self.scrollView.alpha = 0
         self.bottomToolView.alpha = 0
         self.rotateBtn.alpha = 0
@@ -516,7 +502,6 @@ class ZLClipImageViewController: UIViewController {
         }
         
         self.generateThumbnailImage()
-        self.clipRatioColView.reloadData()
     }
     
 
@@ -741,41 +726,6 @@ class ZLClipImageViewController: UIViewController {
 
 
 
-extension ZLClipImageViewController: UICollectionViewDataSource, UICollectionViewDelegate {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ZLImageClipRatioCell.zl_identifier(), for: indexPath) as! ZLImageClipRatioCell
-        
-        let ratio = self.clipRatios
-        cell.configureCell(image: self.thumbnailImage ?? self.editImage, ratio: ratio)
-        
-        if ratio == self.selectedRatio {
-            cell.titleLabel.textColor = .white
-        } else {
-            cell.titleLabel.textColor = zlRGB(160, 160, 160)
-        }
-        
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let ratio = self.clipRatios
-        guard ratio != self.selectedRatio else {
-            return
-        }
-        self.selectedRatio = ratio
-        self.clipRatioColView.reloadData()
-        self.clipRatioColView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
-        self.calculateClipRect()
-        self.layoutInitialImage()
-    }
-    
-}
-
 
 extension ZLClipImageViewController: UIScrollViewDelegate {
     
@@ -792,83 +742,6 @@ extension ZLClipImageViewController: UIViewControllerTransitioningDelegate {
     
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return ZLClipImageDismissAnimatedTransition()
-    }
-    
-}
-
-
-// MARK: 裁剪比例cell
-
-class ZLImageClipRatioCell: UICollectionViewCell {
-    
-    var imageView: UIImageView!
-    
-    var titleLabel: UILabel!
-    
-    var image: UIImage?
-    
-    var ratio: ZLImageClipRatio!
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.setupUI()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        guard let ratio = self.ratio, let image = self.image else {
-            return
-        }
-        
-        let center = self.imageView.center
-        var w: CGFloat = 0, h: CGFloat = 0
-        
-        let imageMaxW = self.bounds.width-10
-        if ratio.whRatio == 0 {
-            let maxSide = max(image.size.width, image.size.height)
-            w = imageMaxW * image.size.width / maxSide
-            h = imageMaxW * image.size.height / maxSide
-        } else {
-            if ratio.whRatio >= 1 {
-                w = imageMaxW
-                h = w / ratio.whRatio
-            } else {
-                h = imageMaxW
-                w = h * ratio.whRatio
-            }
-        }
-        self.imageView.frame = CGRect(x: center.x-w/2, y: center.y-h/2, width: w, height: h)
-    }
-    
-    func setupUI() {
-        self.imageView = UIImageView(frame: CGRect(x: 8, y: 5, width: self.bounds.width-16, height: self.bounds.width-16))
-        self.imageView.contentMode = .scaleAspectFill
-        self.imageView.layer.cornerRadius = 3
-        self.imageView.layer.masksToBounds = true
-        self.imageView.clipsToBounds = true
-        self.contentView.addSubview(self.imageView)
-        
-        self.titleLabel = UILabel(frame: CGRect(x: 0, y: self.bounds.height-15, width: self.bounds.width, height: 12))
-        self.titleLabel.font = getFont(12)
-        self.titleLabel.textColor = .white
-        self.titleLabel.textAlignment = .center
-        self.titleLabel.layer.shadowColor = UIColor.black.withAlphaComponent(0.3).cgColor
-        self.titleLabel.layer.shadowOffset = .zero
-        self.titleLabel.layer.shadowOpacity = 1
-        self.contentView.addSubview(self.titleLabel)
-    }
-    
-    func configureCell(image: UIImage, ratio: ZLImageClipRatio) {
-        self.imageView.image = image
-        self.titleLabel.text = ratio.title
-        self.image = image
-        self.ratio = ratio
-        
-        self.setNeedsLayout()
     }
     
 }
