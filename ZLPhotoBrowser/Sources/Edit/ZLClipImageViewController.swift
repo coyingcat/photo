@@ -129,7 +129,7 @@ class ZLClipImageViewController: UIViewController {
     var dismissAnimateImage: UIImage? = nil
     
     /// 传回旋转角度，图片编辑区域的rect
-    var clipDoneBlock: ( (CGFloat, CGRect, ZLImageClipRatio) -> Void )?
+    var clipDoneBlock: ( (CGFloat, CGRect) -> Void )?
     
     var cancelClipBlock: ( () -> Void )?
     
@@ -463,7 +463,7 @@ class ZLClipImageViewController: UIViewController {
         let image = self.clipImage()
         self.dismissAnimateFromRect = self.clipBoxFrame
         self.dismissAnimateImage = image.clipImage
-        self.clipDoneBlock?(self.angle, image.editRect, self.selectedRatio)
+        self.clipDoneBlock?(self.angle, image.editRect)
         self.dismiss(animated: self.animate, completion: nil)
     }
     

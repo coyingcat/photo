@@ -63,8 +63,6 @@ public class ZLEditImageViewController: UIViewController {
     
     let tools: [ZLEditImageViewController.EditImageTool]
     
-    var selectRatio: ZLImageClipRatio?
-    
     var editImage: UIImage
     
     var cancelBtn: UIButton!
@@ -119,7 +117,7 @@ public class ZLEditImageViewController: UIViewController {
         let tools = ZLPhotoConfiguration.default().editImageTools
         if ZLPhotoConfiguration.default().showClipDirectlyIfOnlyHasClipTool, tools.count == 1, tools.contains(.clip) {
             let vc = ZLClipImageViewController(image: image, editRect: editModel?.editRect, angle: editModel?.angle ?? 0)
-            vc.clipDoneBlock = { (angle, editRect, ratio) in
+            vc.clipDoneBlock = { (angle, editRect) in
                 let m = ZLEditImageModel(editRect: editRect, angle: angle)
                 completion?(image.clipImage(angle, editRect) ?? image, m)
             }
@@ -321,7 +319,7 @@ public class ZLEditImageViewController: UIViewController {
         vc.presentAnimateImage = currentEditImage.clipImage(self.angle, self.editRect)
         vc.modalPresentationStyle = .fullScreen
         
-        vc.clipDoneBlock = { [weak self] (angle, editFrame, selectRatio) in
+        vc.clipDoneBlock = { [weak self] (angle, editFrame) in
             guard let `self` = self else { return }
         
             if self.angle != angle {
@@ -329,7 +327,6 @@ public class ZLEditImageViewController: UIViewController {
                 self.rotationImageView()
             }
             self.editRect = editFrame
-            self.selectRatio = selectRatio
             self.resetContainerViewFrame()
          
         }
