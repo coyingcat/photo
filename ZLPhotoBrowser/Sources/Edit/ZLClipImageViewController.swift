@@ -77,10 +77,6 @@ class ZLClipImageViewController: UIViewController {
     
     var imageView: UIImageView!
     
-    var shadowView: ZLClipShadowView!
-    
-    var gridPanGes: UIPanGestureRecognizer!
-    
     var bottomToolView: UIView!
     
     var bottomShadowLayer: CAGradientLayer!
@@ -235,7 +231,6 @@ class ZLClipImageViewController: UIViewController {
         self.shouldLayout = false
         
         self.scrollView.frame = self.view.bounds
-        self.shadowView.frame = self.view.bounds
         
         self.layoutInitialImage()
         
@@ -246,7 +241,6 @@ class ZLClipImageViewController: UIViewController {
         let toolBtnH: CGFloat = 25
         let toolBtnY = (ZLClipImageViewController.bottomToolViewH - toolBtnH) / 2 - 10
         self.cancelBtn.frame = CGRect(x: 30, y: toolBtnY, width: toolBtnH, height: toolBtnH)
-        let revertBtnW = localLanguageTextValue(.revert).boundingRect(font: ZLLayout.bottomToolTitleFont, limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: toolBtnH)).width + 20
       
         self.doneBtn.frame = CGRect(x: self.view.bounds.width-30-toolBtnH, y: toolBtnY, width: toolBtnH, height: toolBtnH)
         
@@ -281,12 +275,6 @@ class ZLClipImageViewController: UIViewController {
         self.imageView.contentMode = .scaleAspectFit
         self.imageView.clipsToBounds = true
         self.containerView.addSubview(self.imageView)
-        
-        self.shadowView = ZLClipShadowView()
-        self.shadowView.isUserInteractionEnabled = false
-        self.shadowView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
-        self.view.addSubview(self.shadowView)
-    
         
         self.bottomToolView = UIView()
         self.view.addSubview(self.bottomToolView)
@@ -455,9 +443,7 @@ class ZLClipImageViewController: UIViewController {
 
         
         self.clipBoxFrame = frame
-        self.shadowView.clearRect = frame
-   
-        
+
         self.scrollView.contentInset = UIEdgeInsets(top: frame.minY, left: frame.minX, bottom: self.scrollView.frame.maxY-frame.maxY, right: self.scrollView.frame.maxX-frame.maxX)
         
         let scale = max(frame.height/self.editImage.size.height, frame.width/self.editImage.size.width)
@@ -721,7 +707,6 @@ class ZLClipImageViewController: UIViewController {
     
     func startEditing() {
         self.cleanTimer()
-        self.shadowView.alpha = 0
         if self.rotateBtn.alpha != 0 {
             self.rotateBtn.layer.removeAllAnimations()
             self.clipRatioColView.layer.removeAllAnimations()
@@ -787,7 +772,7 @@ class ZLClipImageViewController: UIViewController {
             }
             self.rotateBtn.alpha = 1
             self.clipRatioColView.alpha = 1
-            self.shadowView.alpha = 1
+        
             self.changeClipBoxFrame(newFrame: clipRect)
         }
     }
@@ -966,34 +951,3 @@ class ZLImageClipRatioCell: UICollectionViewCell {
     }
     
 }
-
-
-
-class ZLClipShadowView: UIView {
-    
-    var clearRect: CGRect = .zero {
-        didSet {
-            self.setNeedsDisplay()
-        }
-    }
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.backgroundColor = .clear
-        self.isOpaque = false
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func draw(_ rect: CGRect) {
-        UIColor(white: 0, alpha: 0.7).setFill()
-        UIRectFill(rect)
-        let cr = self.clearRect.intersection(rect)
-        UIColor.clear.setFill()
-        UIRectFill(cr)
-    }
-    
-}
-
