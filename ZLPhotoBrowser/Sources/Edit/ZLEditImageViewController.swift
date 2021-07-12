@@ -398,40 +398,6 @@ public class ZLEditImageViewController: UIViewController {
 }
 
 
-// MARK: scroll view delegate
-extension ZLEditImageViewController: UIScrollViewDelegate {
-
-    
-    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard scrollView == self.scrollView else {
-            return
-        }
-        self.isScrolling = true
-    }
-    
-    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        guard scrollView == self.scrollView else {
-            return
-        }
-        self.isScrolling = decelerate
-    }
-    
-    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        guard scrollView == self.scrollView else {
-            return
-        }
-        self.isScrolling = false
-    }
-    
-    public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        guard scrollView == self.scrollView else {
-            return
-        }
-        self.isScrolling = false
-    }
-    
-}
-
 
 extension ZLEditImageViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     

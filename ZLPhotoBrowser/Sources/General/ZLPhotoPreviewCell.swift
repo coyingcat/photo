@@ -812,7 +812,7 @@ class ZLPreviewView: UIView {
         self.scrollView.maximumZoomScale = ZLPreviewView.defaultMaxZoomScale
         self.scrollView.minimumZoomScale = 1
         self.scrollView.isMultipleTouchEnabled = true
-        self.scrollView.delegate = self
+
         self.scrollView.showsHorizontalScrollIndicator = false
         self.scrollView.showsVerticalScrollIndicator = false
         self.scrollView.delaysContentTouches = false
@@ -1056,25 +1056,6 @@ class ZLPreviewView: UIView {
         let pauseTime = self.imageView.layer.convertTime(CACurrentMediaTime(), from: nil)
         self.imageView.layer.speed = 0
         self.imageView.layer.timeOffset = pauseTime
-    }
-    
-}
-
-
-extension ZLPreviewView: UIScrollViewDelegate {
-    
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return self.containerView
-    }
-    
-    func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        let offsetX = (scrollView.frame.width > scrollView.contentSize.width) ? (scrollView.frame.width - scrollView.contentSize.width) * 0.5 : 0
-        let offsetY = (scrollView.frame.height > scrollView.contentSize.height) ? (scrollView.frame.height - scrollView.contentSize.height) * 0.5 : 0
-        self.containerView.center = CGPoint(x: scrollView.contentSize.width * 0.5 + offsetX, y: scrollView.contentSize.height * 0.5 + offsetY)
-    }
-    
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        self.resumeGif()
     }
     
 }
