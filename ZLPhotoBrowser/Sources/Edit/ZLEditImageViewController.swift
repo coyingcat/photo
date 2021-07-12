@@ -108,11 +108,6 @@ public class ZLEditImageViewController: UIViewController {
     
     var filterCollectionView: UICollectionView!
     
-    var ashbinView: UIView!
-    
-    var ashbinImgView: UIImageView!
-    
-    
     var isScrolling = false
     
     var shouldLayout = true
@@ -327,28 +322,6 @@ public class ZLEditImageViewController: UIViewController {
         self.revokeBtn.isHidden = true
    
         self.bottomShadowView.addSubview(self.revokeBtn)
-        
-        let ashbinSize = CGSize(width: 160, height: 80)
-        self.ashbinView = UIView(frame: CGRect(x: (self.view.frame.width-ashbinSize.width)/2, y: self.view.frame.height-ashbinSize.height-40, width: ashbinSize.width, height: ashbinSize.height))
-        self.ashbinView.backgroundColor = ZLEditImageViewController.ashbinNormalBgColor
-        self.ashbinView.layer.cornerRadius = 15
-        self.ashbinView.layer.masksToBounds = true
-        self.ashbinView.isHidden = true
-        self.view.addSubview(self.ashbinView)
-        
-        self.ashbinImgView = UIImageView(image: getImage("zl_ashbin"), highlightedImage: getImage("zl_ashbin_open"))
-        self.ashbinImgView.frame = CGRect(x: (ashbinSize.width-25)/2, y: 15, width: 25, height: 25)
-        self.ashbinView.addSubview(self.ashbinImgView)
-        
-        let asbinTipLabel = UILabel(frame: CGRect(x: 0, y: ashbinSize.height-34, width: ashbinSize.width, height: 34))
-        asbinTipLabel.font = getFont(12)
-        asbinTipLabel.textAlignment = .center
-        asbinTipLabel.textColor = .white
-        asbinTipLabel.text = localLanguageTextValue(.textStickerRemoveTips)
-        asbinTipLabel.numberOfLines = 2
-        asbinTipLabel.lineBreakMode = .byCharWrapping
-        self.ashbinView.addSubview(asbinTipLabel)
-        
     }
     
     func rotationImageView() {
@@ -532,24 +505,11 @@ class ZLEditToolCell: UICollectionViewCell {
     var toolType: ZLEditImageViewController.EditImageTool? {
         didSet {
             switch toolType {
-            case .draw?:
-                self.icon.image = getImage("zl_drawLine")
-                self.icon.highlightedImage = getImage("zl_drawLine_selected")
+     
             case .clip?:
                 self.icon.image = getImage("zl_clip")
                 self.icon.highlightedImage = getImage("zl_clip")
-            case .imageSticker?:
-                self.icon.image = getImage("zl_imageSticker")
-                self.icon.highlightedImage = getImage("zl_imageSticker")
-            case .textSticker?:
-                self.icon.image = getImage("zl_textSticker")
-                self.icon.highlightedImage = getImage("zl_textSticker")
-            case .mosaic?:
-                self.icon.image = getImage("zl_mosaic")
-                self.icon.highlightedImage = getImage("zl_mosaic_selected")
-            case .filter?:
-                self.icon.image = getImage("zl_filter")
-                self.icon.highlightedImage = getImage("zl_filter_selected")
+    
             default:
                 break
             }
