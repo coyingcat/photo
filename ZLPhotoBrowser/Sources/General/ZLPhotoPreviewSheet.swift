@@ -255,13 +255,23 @@ public class ZLPhotoPreviewSheet: UIView {
         self.isHidden = true
         self.sender?.view.addSubview(self)
         
-        let vc = ZLPhotoPreviewController(photos: models, index: index)
-        vc.autoSelectCurrentIfNotSelectAnyone = false
-        let nav = self.getImageNav(rootViewController: vc)
-        vc.backBlock = { [weak self] in
-            self?.hide()
+   
+       
+        let model = models[index]
+   
+        
+        ZLPhotoManager.fetchImage(for: model.asset, size: model.previewSize) { [weak self] (image, isDegraded) in
+            guard let `self` = self else { return }
+            if !isDegraded {
+                if let image = image {
+                    let editC = ZLEditImageViewController(image: image, editModel: nil)
+                    let nav = self.getImageNav(rootViewController: editC)
+                    self.sender?.showDetailViewController(nav, sender: nil)
+                }
+            }
         }
-        self.sender?.showDetailViewController(nav, sender: nil)
+        
+        
     }
     
     func show(preview: Bool, animate: Bool, sender: UIViewController) {
@@ -581,18 +591,21 @@ public class ZLPhotoPreviewSheet: UIView {
     }
     
     func showPreviewController(_ models: [ZLPhotoModel], index: Int) {
-        let vc = ZLPhotoPreviewController(photos: models, index: index)
-        let nav = self.getImageNav(rootViewController: vc)
-        vc.backBlock = { [weak self, weak nav] in
+        
+        
+        let model = models[index]
+   
+        
+        ZLPhotoManager.fetchImage(for: model.asset, size: model.previewSize) { [weak self] (image, isDegraded) in
             guard let `self` = self else { return }
-            self.isSelectOriginal = nav?.isSelectedOriginal ?? false
-            self.arrSelectedModels.removeAll()
-            self.arrSelectedModels.append(contentsOf: nav?.arrSelectedModels ?? [])
-            markSelected(source: &self.arrDataSources, selected: &self.arrSelectedModels)
-            self.collectionView.reloadItems(at: self.collectionView.indexPathsForVisibleItems)
-            self.changeCancelBtnTitle()
+            if !isDegraded {
+                if let image = image {
+                    let editC = ZLEditImageViewController(image: image, editModel: nil)
+                    let nav = self.getImageNav(rootViewController: editC)
+                    self.sender?.showDetailViewController(nav, sender: nil)
+                }
+            }
         }
-        self.sender?.showDetailViewController(nav, sender: nil)
     }
     
     func showEditImageVC(model: ZLPhotoModel) {

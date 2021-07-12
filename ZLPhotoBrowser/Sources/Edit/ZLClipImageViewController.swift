@@ -390,7 +390,7 @@ class ZLClipImageViewController: UIViewController {
         self.dismissAnimateFromRect = self.cancelClipAnimateFrame
         self.dismissAnimateImage = self.presentAnimateImage
         self.cancelClipBlock?()
-        self.dismiss(animated: true, completion: nil)
+        gg()
     }
     
 
@@ -400,8 +400,19 @@ class ZLClipImageViewController: UIViewController {
         self.dismissAnimateFromRect = self.clipBoxFrame
         self.dismissAnimateImage = image.clipImage
         self.clipDoneBlock?(self.angle, image.editRect)
-        self.dismiss(animated: true, completion: nil)
+        gg()
     }
+    
+    
+    func gg(){
+        
+        let ctrl = presentingViewController
+        
+        dismiss(animated: true) {
+            ctrl?.dismiss(animated: true, completion: nil)
+        }
+    }
+    
     
     @objc func rotateBtnClick() {
         guard !self.isRotating else {

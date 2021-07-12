@@ -80,8 +80,6 @@ public class ZLEditImageViewController: UIViewController {
     
     var doneBtn: UIButton!
     
-    var revokeBtn: UIButton!
-    
     var editToolCollectionView: UICollectionView!
     
     var isScrolling = false
@@ -174,7 +172,6 @@ public class ZLEditImageViewController: UIViewController {
         self.bottomShadowView.frame = CGRect(x: 0, y: self.view.frame.height-140-insets.bottom, width: self.view.frame.width, height: 140+insets.bottom)
         self.bottomShadowLayer.frame = self.bottomShadowView.bounds
         
-        self.revokeBtn.frame = CGRect(x: self.view.frame.width - 15 - 35, y: 30, width: 35, height: 30)
         
         let toolY: CGFloat = 85
         
@@ -283,15 +280,6 @@ public class ZLEditImageViewController: UIViewController {
         self.doneBtn.layer.masksToBounds = true
         self.doneBtn.layer.cornerRadius = ZLLayout.bottomToolBtnCornerRadius
         self.bottomShadowView.addSubview(self.doneBtn)
-        
-        self.revokeBtn = UIButton(type: .custom)
-        self.revokeBtn.setImage(getImage("zl_revoke_disable"), for: .disabled)
-        self.revokeBtn.setImage(getImage("zl_revoke"), for: .normal)
-        self.revokeBtn.adjustsImageWhenHighlighted = false
-        self.revokeBtn.isEnabled = false
-        self.revokeBtn.isHidden = true
-   
-        self.bottomShadowView.addSubview(self.revokeBtn)
     }
     
     func rotationImageView() {
@@ -299,8 +287,13 @@ public class ZLEditImageViewController: UIViewController {
         self.imageView.transform = transform
     }
     
-    @objc func cancelBtnClick() {
-        self.dismiss(animated: false, completion: nil)
+    @objc func cancelBtnClick(){
+        
+        
+        let vc = self.navigationController?.popViewController(animated: true)
+        if vc == nil {
+            self.navigationController?.dismiss(animated: true, completion: nil)
+        }
     }
     
     
@@ -352,7 +345,7 @@ public class ZLEditImageViewController: UIViewController {
         }
         self.editFinishBlock?(resImage, editModel)
         
-        self.dismiss(animated: false, completion: nil)
+        cancelBtnClick()
     }
   
     
