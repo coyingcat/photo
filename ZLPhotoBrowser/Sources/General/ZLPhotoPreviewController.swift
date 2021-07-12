@@ -37,7 +37,6 @@ class ZLPhotoPreviewController: UIViewController {
     
     let arrDataSources: [ZLPhotoModel]
     
-    let showBottomViewAndSelectBtn: Bool
     
     var currentIndex: Int
     
@@ -91,9 +90,9 @@ class ZLPhotoPreviewController: UIViewController {
         zl_debugPrint("ZLPhotoPreviewController deinit")
     }
     
-    init(photos: [ZLPhotoModel], index: Int, showBottomViewAndSelectBtn: Bool = true) {
+    init(photos: [ZLPhotoModel], index: Int) {
         self.arrDataSources = photos
-        self.showBottomViewAndSelectBtn = showBottomViewAndSelectBtn
+    
         self.currentIndex = index
         self.indexBeforOrientationChanged = index
         super.init(nibName: nil, bundle: nil)
@@ -389,11 +388,7 @@ class ZLPhotoPreviewController: UIViewController {
         self.selectBtn.isSelected = self.arrDataSources[self.currentIndex].isSelected
         self.resetIndexLabelStatus()
         
-        guard self.showBottomViewAndSelectBtn else {
-            self.selectBtn.isHidden = true
-            self.bottomView.isHidden = true
-            return
-        }
+
         let selCount = nav.arrSelectedModels.count
         var doneTitle = localLanguageTextValue(.done)
         if selCount > 0 {
@@ -552,7 +547,7 @@ class ZLPhotoPreviewController: UIViewController {
             }
         }
         self.navView.isHidden = self.hideNavView
-        self.bottomView.isHidden = self.showBottomViewAndSelectBtn ? self.hideNavView : true
+        self.bottomView.isHidden = self.hideNavView
     }
     
     func showEditImageVC(image: UIImage) {

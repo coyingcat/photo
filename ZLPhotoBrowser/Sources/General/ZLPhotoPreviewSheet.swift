@@ -242,7 +242,7 @@ public class ZLPhotoPreviewSheet: UIView {
     }
     
     /// 传入已选择的assets，并预览
-    @objc public func previewAssets(sender: UIViewController, assets: [PHAsset], index: Int, isOriginal: Bool, showBottomViewAndSelectBtn: Bool = true) {
+    @objc public func previewAssets(sender: UIViewController, assets: [PHAsset], index: Int, isOriginal: Bool) {
         let models = assets.removeDuplicate().map { (asset) -> ZLPhotoModel in
             let m = ZLPhotoModel(asset: asset)
             m.isSelected = true
@@ -255,7 +255,7 @@ public class ZLPhotoPreviewSheet: UIView {
         self.isHidden = true
         self.sender?.view.addSubview(self)
         
-        let vc = ZLPhotoPreviewController(photos: models, index: index, showBottomViewAndSelectBtn: showBottomViewAndSelectBtn)
+        let vc = ZLPhotoPreviewController(photos: models, index: index)
         vc.autoSelectCurrentIfNotSelectAnyone = false
         let nav = self.getImageNav(rootViewController: vc)
         vc.backBlock = { [weak self] in
