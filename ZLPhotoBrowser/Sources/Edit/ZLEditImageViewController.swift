@@ -121,7 +121,6 @@ public class ZLEditImageViewController: UIViewController {
                 let m = ZLEditImageModel(editRect: editRect, angle: angle)
                 completion?(image.clipImage(angle, editRect) ?? image, m)
             }
-            vc.animate = animate
             vc.modalPresentationStyle = .fullScreen
             parentVC?.present(vc, animated: animate, completion: nil)
         } else {

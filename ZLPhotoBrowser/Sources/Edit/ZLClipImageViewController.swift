@@ -26,30 +26,11 @@
 
 import UIKit
 
-extension ZLClipImageViewController {
-    
-    enum ClipPanEdge {
-        case none
-        case top
-        case bottom
-        case left
-        case right
-        case topLeft
-        case topRight
-        case bottomLeft
-        case bottomRight
-    }
-    
-}
-
-
 class ZLClipImageViewController: UIViewController {
 
     static let bottomToolViewH: CGFloat = 90
     
     static let clipRatioItemSize: CGSize = CGSize(width: 60, height: 70)
-    
-    var animate = true
     
     /// 用作进入裁剪界面首次动画frame
     var presentAnimateFrame: CGRect?
@@ -61,8 +42,6 @@ class ZLClipImageViewController: UIViewController {
     var cancelClipAnimateFrame: CGRect = .zero
     
     var viewDidAppearCount = 0
-    
-    let originalImage: UIImage
     
     let clipRatios: ZLImageClipRatio
     
@@ -91,9 +70,6 @@ class ZLClipImageViewController: UIViewController {
     
     var shouldLayout = true
     
-    var panEdge: ZLClipImageViewController.ClipPanEdge = .none
-    
-    var beginPanPoint: CGPoint = .zero
     
     var clipBoxFrame: CGRect = .zero
     
@@ -141,7 +117,6 @@ class ZLClipImageViewController: UIViewController {
 
     
     init(image: UIImage, editRect: CGRect?, angle: CGFloat = 0) {
-        self.originalImage = image
         self.clipRatios = ZLPhotoConfiguration.default().editImageClipRatios
         self.editRect = editRect ?? .zero
         self.angle = angle
@@ -436,7 +411,7 @@ class ZLClipImageViewController: UIViewController {
         self.dismissAnimateFromRect = self.cancelClipAnimateFrame
         self.dismissAnimateImage = self.presentAnimateImage
         self.cancelClipBlock?()
-        self.dismiss(animated: self.animate, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
     
 
@@ -446,7 +421,7 @@ class ZLClipImageViewController: UIViewController {
         self.dismissAnimateFromRect = self.clipBoxFrame
         self.dismissAnimateImage = image.clipImage
         self.clipDoneBlock?(self.angle, image.editRect)
-        self.dismiss(animated: self.animate, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
     
     @objc func rotateBtnClick() {
