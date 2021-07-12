@@ -33,6 +33,9 @@ import Photos
 }
 
 public class ZLImagePreviewController: UIViewController {
+    
+    
+    let colItemSpacing: CGFloat = 40
 
     static let colItemSpacing: CGFloat = 40
     
@@ -143,7 +146,7 @@ public class ZLImagePreviewController: UIViewController {
         }
         insets.top = max(20, insets.top)
         
-        self.collectionView.frame = CGRect(x: -ZLPhotoPreviewController.colItemSpacing / 2, y: 0, width: self.view.frame.width + ZLPhotoPreviewController.colItemSpacing, height: self.view.frame.height)
+        self.collectionView.frame = CGRect(x: -colItemSpacing / 2, y: 0, width: self.view.frame.width + colItemSpacing, height: self.view.frame.height)
         
         let navH = insets.top + 44
         self.navView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: navH)
@@ -163,9 +166,9 @@ public class ZLImagePreviewController: UIViewController {
         let ori = UIApplication.shared.statusBarOrientation
         if ori != self.orientation {
             self.orientation = ori
-            self.collectionView.setContentOffset(CGPoint(x: (self.view.frame.width + ZLPhotoPreviewController.colItemSpacing) * CGFloat(self.indexBeforOrientationChanged), y: 0), animated: false)
+            self.collectionView.setContentOffset(CGPoint(x: (self.view.frame.width + colItemSpacing) * CGFloat(self.indexBeforOrientationChanged), y: 0), animated: false)
              self.collectionView.performBatchUpdates({
-                self.collectionView.setContentOffset(CGPoint(x: (self.view.frame.width + ZLPhotoPreviewController.colItemSpacing) * CGFloat(self.indexBeforOrientationChanged), y: 0), animated: false)
+                self.collectionView.setContentOffset(CGPoint(x: (self.view.frame.width + colItemSpacing) * CGFloat(self.indexBeforOrientationChanged), y: 0), animated: false)
              })
         }
     }
@@ -364,9 +367,9 @@ extension ZLImagePreviewController {
         guard scrollView == self.collectionView else {
             return
         }
-        NotificationCenter.default.post(name: ZLPhotoPreviewController.previewVCScrollNotification, object: nil)
+
         let offset = scrollView.contentOffset
-        var page = Int(round(offset.x / (self.view.bounds.width + ZLPhotoPreviewController.colItemSpacing)))
+        var page = Int(round(offset.x / (self.view.bounds.width + colItemSpacing)))
         page = max(0, min(page, self.datas.count-1))
         if page == self.currentIndex {
             return

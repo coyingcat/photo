@@ -38,17 +38,14 @@ class ZLPreviewBaseCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(previewVCScroll), name: ZLPhotoPreviewController.previewVCScrollNotification, object: nil)
+
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    @objc func previewVCScroll() {
-        
-    }
+
     
     func resetSubViewStatusWhenCellEndDisplay() {
         
@@ -305,7 +302,7 @@ class ZLGifPreviewCell: ZLPreviewBaseCell {
         self.contentView.addSubview(self.preview)
     }
     
-    override func previewVCScroll() {
+    func previewVCScroll() {
         self.preview.pauseGif()
     }
     
@@ -388,7 +385,7 @@ class ZLLivePhotoPreviewCell: ZLPreviewBaseCell {
         self.contentView.addSubview(self.imageView)
     }
     
-    override func previewVCScroll() {
+    func previewVCScroll() {
         self.livePhotoView.stopPlayback()
     }
     
@@ -611,7 +608,7 @@ class ZLVideoPreviewCell: ZLPreviewBaseCell {
         }
     }
     
-    override func previewVCScroll() {
+    func previewVCScroll() {
         if self.player != nil, self.player?.rate != 0 {
             self.pausePlayer(seekToZero: false)
         }
@@ -731,7 +728,7 @@ class ZLNetVideoPreviewCell: ZLPreviewBaseCell {
         }
     }
     
-    override func previewVCScroll() {
+    func previewVCScroll() {
         if self.player != nil, self.player?.rate != 0 {
             self.pausePlayer(seekToZero: false)
         }

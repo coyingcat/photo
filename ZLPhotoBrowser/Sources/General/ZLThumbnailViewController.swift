@@ -435,8 +435,19 @@ class ZLThumbnailViewController: UIViewController {
     
     @objc func previewBtnClick() {
         let nav = self.navigationController as! ZLImageNavController
-        let vc = ZLPhotoPreviewController(photos: nav.arrSelectedModels, index: 0)
-        self.show(vc, sender: nil)
+
+        let model = nav.arrSelectedModels[0]
+
+        ZLPhotoManager.fetchImage(for: model.asset, size: model.previewSize) { [weak self] (image, isDegraded) in
+            guard let `self` = self else { return }
+            if !isDegraded {
+                if let image = image {
+                    let editC = ZLEditImageViewController(image: image, editModel: nil)
+                    self.show(editC, sender: nil)
+                }
+            }
+        }
+
     }
     
     @objc func originalPhotoClick() {
@@ -996,9 +1007,17 @@ extension ZLThumbnailViewController: UICollectionViewDataSource, UICollectionVie
         if self.shouldDirectEdit(m) {
             return
         }
-        
-        let vc = ZLPhotoPreviewController(photos: self.arrDataSources, index: index)
-        self.show(vc, sender: nil)
+        let model = arrDataSources[index]
+
+        ZLPhotoManager.fetchImage(for: model.asset, size: model.previewSize) { [weak self] (image, isDegraded) in
+            guard let `self` = self else { return }
+            if !isDegraded {
+                if let image = image {
+                    let editC = ZLEditImageViewController(image: image, editModel: nil)
+                    self.show(editC, sender: nil)
+                }
+            }
+        }
     }
     
     func shouldDirectEdit(_ model: ZLPhotoModel) -> Bool {
