@@ -33,13 +33,12 @@ public class ZLEditImageModel: NSObject {
     
     public let angle: CGFloat
     
-    public let selectRatio: ZLImageClipRatio?
 
-    init(editRect: CGRect?, angle: CGFloat, selectRatio: ZLImageClipRatio?) {
+
+    init(editRect: CGRect?, angle: CGFloat) {
 
         self.editRect = editRect
         self.angle = angle
-        self.selectRatio = selectRatio
 
         super.init()
     }
@@ -119,9 +118,9 @@ public class ZLEditImageViewController: UIViewController {
     @objc public class func showEditImageVC(parentVC: UIViewController?, animate: Bool = false, image: UIImage, editModel: ZLEditImageModel? = nil, completion: ( (UIImage, ZLEditImageModel?) -> Void )? ) {
         let tools = ZLPhotoConfiguration.default().editImageTools
         if ZLPhotoConfiguration.default().showClipDirectlyIfOnlyHasClipTool, tools.count == 1, tools.contains(.clip) {
-            let vc = ZLClipImageViewController(image: image, editRect: editModel?.editRect, angle: editModel?.angle ?? 0, selectRatio: editModel?.selectRatio)
+            let vc = ZLClipImageViewController(image: image, editRect: editModel?.editRect, angle: editModel?.angle ?? 0)
             vc.clipDoneBlock = { (angle, editRect, ratio) in
-                let m = ZLEditImageModel(editRect: editRect, angle: angle, selectRatio: ratio)
+                let m = ZLEditImageModel(editRect: editRect, angle: angle)
                 completion?(image.clipImage(angle, editRect) ?? image, m)
             }
             vc.animate = animate
@@ -143,8 +142,6 @@ public class ZLEditImageViewController: UIViewController {
         self.editRect = editModel?.editRect ?? CGRect(origin: .zero, size: image.size)
         
         self.angle = editModel?.angle ?? 0
-        self.selectRatio = editModel?.selectRatio
-        
 
         self.tools = ZLPhotoConfiguration.default().editImageTools
         
@@ -318,7 +315,7 @@ public class ZLEditImageViewController: UIViewController {
     
     func clipBtnClick() {
         let currentEditImage = editImage
-        let vc = ZLClipImageViewController(image: currentEditImage, editRect: self.editRect, angle: self.angle, selectRatio: self.selectRatio)
+        let vc = ZLClipImageViewController(image: currentEditImage, editRect: self.editRect, angle: self.angle)
         let rect = self.scrollView.convert(self.containerView.frame, to: self.view)
         vc.presentAnimateFrame = rect
         vc.presentAnimateImage = currentEditImage.clipImage(self.angle, self.editRect)
@@ -361,7 +358,7 @@ public class ZLEditImageViewController: UIViewController {
         if hasEdit {
             resImage = editImage
             resImage = resImage.clipImage(self.angle, self.editRect) ?? resImage
-            editModel = ZLEditImageModel(editRect: self.editRect, angle: self.angle, selectRatio: self.selectRatio)
+            editModel = ZLEditImageModel(editRect: self.editRect, angle: self.angle)
         }
         self.editFinishBlock?(resImage, editModel)
         
