@@ -458,24 +458,22 @@ class ZLClipImageViewController: UIViewController {
         let originX = ceil(self.maxClipFrame.minX)
         let diffX = frame.minX - originX
         frame.origin.x = max(frame.minX, originX)
-//        frame.origin.x = floor(max(frame.minX, originX))
         if diffX < -CGFloat.ulpOfOne {
             frame.size.width += diffX
         }
         let originY = ceil(self.maxClipFrame.minY)
         let diffY = frame.minY - originY
         frame.origin.y = max(frame.minY, originY)
-//        frame.origin.y = floor(max(frame.minY, originY))
         if diffY < -CGFloat.ulpOfOne {
             frame.size.height += diffY
         }
         let maxW = self.maxClipFrame.width + self.maxClipFrame.minX - frame.minX
         frame.size.width = max(self.minClipSize.width, min(frame.width, maxW))
-//        frame.size.width = floor(max(self.minClipSize.width, min(frame.width, maxW)))
+
         
         let maxH = self.maxClipFrame.height + self.maxClipFrame.minY - frame.minY
         frame.size.height = max(self.minClipSize.height, min(frame.height, maxH))
-//        frame.size.height = floor(max(self.minClipSize.height, min(frame.height, maxH)))
+
         
         self.clipBoxFrame = frame
         self.shadowView.clearRect = frame
@@ -486,10 +484,7 @@ class ZLClipImageViewController: UIViewController {
         let scale = max(frame.height/self.editImage.size.height, frame.width/self.editImage.size.width)
         self.scrollView.minimumZoomScale = scale
         
-//        var size = self.scrollView.contentSize
-//        size.width = floor(size.width)
-//        size.height = floor(size.height)
-//        self.scrollView.contentSize = size
+
         
         self.scrollView.zoomScale = self.scrollView.zoomScale
     }
@@ -682,17 +677,10 @@ class ZLClipImageViewController: UIViewController {
             
         case .topLeft:
             if ratio != 0 {
-//                if abs(diffX / ratio) >= abs(diffY) {
                     frame.origin.x = originFrame.minX + diffX
                     frame.size.width = originFrame.width - diffX
                     frame.origin.y = originFrame.minY + diffX / ratio
                     frame.size.height = originFrame.height - diffX / ratio
-//                } else {
-//                    frame.origin.y = originFrame.minY + diffY
-//                    frame.size.height = originFrame.height - diffY
-//                    frame.origin.x = originFrame.minX + diffY * ratio
-//                    frame.size.width = originFrame.width - diffY * ratio
-//                }
             } else {
                 frame.origin.x = originFrame.minX + diffX
                 frame.size.width = originFrame.width - diffX
@@ -702,15 +690,10 @@ class ZLClipImageViewController: UIViewController {
             
         case .topRight:
             if ratio != 0 {
-//                if abs(diffX / ratio) >= abs(diffY) {
                     frame.size.width = originFrame.width + diffX
                     frame.origin.y = originFrame.minY - diffX / ratio
                     frame.size.height = originFrame.height + diffX / ratio
-//                } else {
-//                    frame.origin.y = originFrame.minY + diffY
-//                    frame.size.height = originFrame.height - diffY
-//                    frame.size.width = originFrame.width - diffY * ratio
-//                }
+
             } else {
                 frame.size.width = originFrame.width + diffX
                 frame.origin.y = originFrame.minY + diffY
@@ -719,15 +702,11 @@ class ZLClipImageViewController: UIViewController {
             
         case .bottomLeft:
             if ratio != 0 {
-//                if abs(diffX / ratio) >= abs(diffY) {
+
                     frame.origin.x = originFrame.minX + diffX
                     frame.size.width = originFrame.width - diffX
                     frame.size.height = originFrame.height - diffX / ratio
-//                } else {
-//                    frame.origin.x = originFrame.minX - diffY * ratio
-//                    frame.size.width = originFrame.width + diffY * ratio
-//                    frame.size.height = originFrame.height + diffY
-//                }
+
             } else {
                 frame.origin.x = originFrame.minX + diffX
                 frame.size.width = originFrame.width - diffX
@@ -736,13 +715,10 @@ class ZLClipImageViewController: UIViewController {
             
         case .bottomRight:
             if ratio != 0 {
-//                if abs(diffX / ratio) >= abs(diffY) {
+
                     frame.size.width = originFrame.width + diffX
                     frame.size.height = originFrame.height + diffX / ratio
-//                } else {
-//                    frame.size.width += diffY * ratio
-//                    frame.size.height += diffY
-//                }
+
             } else {
                 frame.size.width = originFrame.width + diffX
                 frame.size.height = originFrame.height + diffY
