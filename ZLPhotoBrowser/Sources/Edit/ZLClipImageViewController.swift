@@ -64,7 +64,7 @@ class ZLClipImageViewController: UIViewController {
     
     let originalImage: UIImage
     
-    let clipRatios: [ZLImageClipRatio]
+    let clipRatios: ZLImageClipRatio
     
     var editImage: UIImage
     
@@ -173,7 +173,7 @@ class ZLClipImageViewController: UIViewController {
             self.selectedRatio = sr
         } else {
             firstEnter = true
-            self.selectedRatio = ZLPhotoConfiguration.default().editImageClipRatios.first!
+            self.selectedRatio = ZLPhotoConfiguration.default().editImageClipRatios
         }
         super.init(nibName: nil, bundle: nil)
         if firstEnter {
@@ -261,9 +261,7 @@ class ZLClipImageViewController: UIViewController {
         let ratioColViewX = self.rotateBtn.frame.maxX + 15
         self.clipRatioColView.frame = CGRect(x: ratioColViewX, y: ratioColViewY, width: self.view.bounds.width - ratioColViewX, height: 70)
         
-        if self.clipRatios.count > 1, let index = self.clipRatios.firstIndex(where: { $0 == self.selectedRatio}) {
-            self.clipRatioColView.scrollToItem(at: IndexPath(row: index, section: 0), at: .centeredHorizontally, animated: false)
-        }
+   
     }
     
     func setupUI() {
@@ -351,7 +349,7 @@ class ZLClipImageViewController: UIViewController {
         self.clipRatioColView.delegate = self
         self.clipRatioColView.dataSource = self
         self.clipRatioColView.backgroundColor = .clear
-        self.clipRatioColView.isHidden = self.clipRatios.count <= 1
+        self.clipRatioColView.isHidden = false
         self.clipRatioColView.showsHorizontalScrollIndicator = false
         self.view.addSubview(self.clipRatioColView)
         ZLImageClipRatioCell.zl_register(self.clipRatioColView)
@@ -927,13 +925,13 @@ extension ZLClipImageViewController: UIGestureRecognizerDelegate {
 extension ZLClipImageViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.clipRatios.count
+        return 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ZLImageClipRatioCell.zl_identifier(), for: indexPath) as! ZLImageClipRatioCell
         
-        let ratio = self.clipRatios[indexPath.row]
+        let ratio = self.clipRatios
         cell.configureCell(image: self.thumbnailImage ?? self.editImage, ratio: ratio)
         
         if ratio == self.selectedRatio {
@@ -946,7 +944,7 @@ extension ZLClipImageViewController: UICollectionViewDataSource, UICollectionVie
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let ratio = self.clipRatios[indexPath.row]
+        let ratio = self.clipRatios
         guard ratio != self.selectedRatio else {
             return
         }

@@ -228,19 +228,9 @@ public class ZLPhotoConfiguration: NSObject {
     /// The default draw color. If this color not in editImageDrawColors, will pick the first color in editImageDrawColors as the default.
     @objc public var editImageDefaultDrawColor = zlRGB(241, 79, 79)
     
-    private var pri_editImageClipRatios: [ZLImageClipRatio] = [.custom]
     /// Edit ratios for image editor.
-    @objc public var editImageClipRatios: [ZLImageClipRatio] {
-        set {
-            pri_editImageClipRatios = newValue
-        }
-        get {
-            if pri_editImageClipRatios.isEmpty {
-                return [.custom]
-            } else {
-                return pri_editImageClipRatios
-            }
-        }
+    @objc public var editImageClipRatios: ZLImageClipRatio {
+        return ZLImageClipRatio(title: "custom", whRatio: 0)
     }
     
     private var pri_textStickerTextColors: [UIColor] = [.white, .black, zlRGB(241, 79, 79), zlRGB(243, 170, 78), zlRGB(80, 169, 56), zlRGB(30, 183, 243), zlRGB(139, 105, 234)]
