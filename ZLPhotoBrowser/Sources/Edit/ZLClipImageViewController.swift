@@ -79,8 +79,6 @@ class ZLClipImageViewController: UIViewController {
     
     var shadowView: ZLClipShadowView!
     
-    var overlayView: ZLClipOverlayView!
-    
     var gridPanGes: UIPanGestureRecognizer!
     
     var bottomToolView: UIView!
@@ -219,7 +217,6 @@ class ZLClipImageViewController: UIViewController {
             }) { (_) in
                 UIView.animate(withDuration: 0.1, animations: {
                     self.scrollView.alpha = 1
-                    self.overlayView.alpha = 1
                 }) { (_) in
                     animateImageView.removeFromSuperview()
                 }
@@ -228,7 +225,6 @@ class ZLClipImageViewController: UIViewController {
             self.bottomToolView.alpha = 1
             self.rotateBtn.alpha = 1
             self.scrollView.alpha = 1
-            self.overlayView.alpha = 1
         }
     }
     
@@ -292,10 +288,7 @@ class ZLClipImageViewController: UIViewController {
         self.shadowView.isUserInteractionEnabled = false
         self.shadowView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
         self.view.addSubview(self.shadowView)
-        
-        self.overlayView = ZLClipOverlayView()
-        self.overlayView.isUserInteractionEnabled = false
-        self.view.addSubview(self.overlayView)
+    
         
         self.bottomToolView = UIView()
         self.view.addSubview(self.bottomToolView)
@@ -354,13 +347,8 @@ class ZLClipImageViewController: UIViewController {
         self.view.addSubview(self.clipRatioColView)
         ZLImageClipRatioCell.zl_register(self.clipRatioColView)
         
-        self.gridPanGes = UIPanGestureRecognizer(target: self, action: #selector(gridGesPanAction(_:)))
-        self.gridPanGes.delegate = self
-        self.view.addGestureRecognizer(self.gridPanGes)
-        self.scrollView.panGestureRecognizer.require(toFail: self.gridPanGes)
         
         self.scrollView.alpha = 0
-        self.overlayView.alpha = 0
         self.bottomToolView.alpha = 0
         self.rotateBtn.alpha = 0
     }
@@ -477,7 +465,7 @@ class ZLClipImageViewController: UIViewController {
         
         self.clipBoxFrame = frame
         self.shadowView.clearRect = frame
-        self.overlayView.frame = frame.insetBy(dx: -ZLClipOverlayView.cornerLineWidth, dy: -ZLClipOverlayView.cornerLineWidth)
+   
         
         self.scrollView.contentInset = UIEdgeInsets(top: frame.minY, left: frame.minX, bottom: self.scrollView.frame.maxY-frame.maxY, right: self.scrollView.frame.maxX-frame.maxX)
         
@@ -555,14 +543,14 @@ class ZLClipImageViewController: UIViewController {
         
         let toFrame = self.view.convert(self.containerView.frame, from: self.scrollView)
         let transform = CGAffineTransform(rotationAngle: -CGFloat.pi/2)
-        self.overlayView.alpha = 0
+
         self.containerView.alpha = 0
         UIView.animate(withDuration: 0.3, animations: {
             animateImageView.transform = transform
             animateImageView.frame = toFrame
         }) { (_) in
             animateImageView.removeFromSuperview()
-            self.overlayView.alpha = 1
+
             self.containerView.alpha = 1
             self.isRotating = false
         }
@@ -571,23 +559,7 @@ class ZLClipImageViewController: UIViewController {
         self.clipRatioColView.reloadData()
     }
     
-    @objc func gridGesPanAction(_ pan: UIPanGestureRecognizer) {
-        let point = pan.location(in: self.view)
-        if pan.state == .began {
-            self.startEditing()
-            self.beginPanPoint = point
-            self.clipOriginFrame = self.clipBoxFrame
-            self.panEdge = self.calculatePanEdge(at: point)
-        } else if pan.state == .changed {
-            guard self.panEdge != .none else {
-                return
-            }
-            self.updateClipBoxFrame(point: point)
-        } else if pan.state == .cancelled || pan.state == .ended {
-            self.panEdge = .none
-            self.startTimer()
-        }
-    }
+
     
     func calculatePanEdge(at point: CGPoint) -> ZLClipImageViewController.ClipPanEdge {
         let frame = self.clipBoxFrame.insetBy(dx: -30, dy: -30)
@@ -878,24 +850,7 @@ class ZLClipImageViewController: UIViewController {
 }
 
 
-extension ZLClipImageViewController: UIGestureRecognizerDelegate {
-    
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard gestureRecognizer == self.gridPanGes else {
-            return true
-        }
-        let point = gestureRecognizer.location(in: self.view)
-        let frame = self.overlayView.frame
-        let innerFrame = frame.insetBy(dx: 22, dy: 22)
-        let outerFrame = frame.insetBy(dx: -22, dy: -22)
-        
-        if innerFrame.contains(point) || !outerFrame.contains(point) {
-            return false
-        }
-        return true
-    }
-    
-}
+
 
 
 extension ZLClipImageViewController: UICollectionViewDataSource, UICollectionViewDelegate {
@@ -1085,95 +1040,3 @@ class ZLClipShadowView: UIView {
     
 }
 
-
-// MARK: 裁剪网格视图
-
-class ZLClipOverlayView: UIView {
-    
-    static let cornerLineWidth: CGFloat = 3
-    
-    var cornerBoldLines: [UIView] = []
-    
-    var velLines: [UIView] = []
-    
-    var horLines: [UIView] = []
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.backgroundColor = .clear
-        self.clipsToBounds = false
-        // 两种方法实现裁剪框，drawrect动画效果 更好一点
-
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        self.setNeedsDisplay()
-
-        
-    }
-    
-    override func draw(_ rect: CGRect) {
-        let context = UIGraphicsGetCurrentContext()
-        context?.setFillColor(UIColor.clear.cgColor)
-        context?.setStrokeColor(UIColor.white.cgColor)
-        context?.setLineWidth(1)
-
-        context?.beginPath()
-        var dw: CGFloat = 3
-        for _ in 0..<4 {
-            context?.move(to: CGPoint(x: rect.origin.x+dw, y: rect.origin.y+3))
-            context?.addLine(to: CGPoint(x: rect.origin.x+dw, y: rect.origin.y+rect.height-3))
-            dw += (rect.size.width - 6) / 3
-        }
-
-        var dh: CGFloat = 3
-        for _ in 0..<4 {
-            context?.move(to: CGPoint(x: rect.origin.x+3, y: rect.origin.y+dh))
-            context?.addLine(to: CGPoint(x: rect.origin.x+rect.width-3, y: rect.origin.y+dh))
-            dh += (rect.size.height - 6) / 3
-        }
-
-        context?.strokePath()
-
-        context?.setLineWidth(3)
-
-        let boldLineLength: CGFloat = 20
-        // 左上
-        context?.move(to: CGPoint(x: 0, y: 1.5))
-        context?.addLine(to: CGPoint(x: boldLineLength, y: 1.5))
-
-        context?.move(to: CGPoint(x: 1.5, y: 0))
-        context?.addLine(to: CGPoint(x: 1.5, y: boldLineLength))
-
-        // 右上
-        context?.move(to: CGPoint(x: rect.width-boldLineLength, y: 1.5))
-        context?.addLine(to: CGPoint(x: rect.width, y: 1.5))
-
-        context?.move(to: CGPoint(x: rect.width-1.5, y: 0))
-        context?.addLine(to: CGPoint(x: rect.width-1.5, y: boldLineLength))
-
-        // 左下
-        context?.move(to: CGPoint(x: 1.5, y: rect.height-boldLineLength))
-        context?.addLine(to: CGPoint(x: 1.5, y: rect.height))
-
-        context?.move(to: CGPoint(x: 0, y: rect.height-1.5))
-        context?.addLine(to: CGPoint(x: boldLineLength, y: rect.height-1.5))
-
-        // 右下
-        context?.move(to: CGPoint(x: rect.width-boldLineLength, y: rect.height-1.5))
-        context?.addLine(to: CGPoint(x: rect.width, y: rect.height-1.5))
-
-        context?.move(to: CGPoint(x: rect.width-1.5, y: rect.height-boldLineLength))
-        context?.addLine(to: CGPoint(x: rect.width-1.5, y: rect.height))
-
-        context?.strokePath()
-
-        context?.setShadow(offset: CGSize(width: 1, height: 1), blur: 0)
-    }
-    
-}
