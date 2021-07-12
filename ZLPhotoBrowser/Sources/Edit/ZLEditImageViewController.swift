@@ -112,21 +112,10 @@ public class ZLEditImageViewController: UIViewController {
     
     var ashbinImgView: UIImageView!
     
-    var drawLineWidth: CGFloat = 5
-    
-    var mosaicLineWidth: CGFloat = 25
-    
-    // collectionview 中的添加滤镜的小图
-    var thumbnailFilterImages: [UIImage] = []
-    
-    // 选择滤镜后对原图添加滤镜后的图片
-    var filterImages: [String: UIImage] = [:]
     
     var isScrolling = false
     
     var shouldLayout = true
-    
-    var imageStickerContainerIsHidden = true
     
     var angle: CGFloat
     
@@ -433,32 +422,6 @@ public class ZLEditImageViewController: UIViewController {
         }
     }
 
-}
-
-
-extension ZLEditImageViewController: UIGestureRecognizerDelegate {
-    
-    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard self.imageStickerContainerIsHidden else {
-            return false
-        }
-        if gestureRecognizer is UITapGestureRecognizer {
-            if self.bottomShadowView.alpha == 1 {
-                let p = gestureRecognizer.location(in: self.view)
-                return !self.bottomShadowView.frame.contains(p)
-            } else {
-                return true
-            }
-        } else if gestureRecognizer is UIPanGestureRecognizer {
-            guard let st = self.selectedTool else {
-                return false
-            }
-            return (st == .draw || st == .mosaic) && !self.isScrolling
-        }
-        
-        return true
-    }
-    
 }
 
 

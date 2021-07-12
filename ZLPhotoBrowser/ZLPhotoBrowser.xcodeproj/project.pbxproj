@@ -34,7 +34,6 @@
 		E49BD1FB24E3D515005D7DFB /* Bundle+ZLPhotoBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49BD1FA24E3D515005D7DFB /* Bundle+ZLPhotoBrowser.swift */; };
 		E49FD9FE258A150600185885 /* PHAsset+ZLPhotoBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49FD9FD258A150600185885 /* PHAsset+ZLPhotoBrowser.swift */; };
 		E4A9CE012505DB91003201C1 /* ZLEmbedAlbumListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A9CE002505DB91003201C1 /* ZLEmbedAlbumListView.swift */; };
-		E4C911C524E284B30061DA40 /* ZLPhotoBrowser.h in Headers */ = {isa = PBXBuildFile; fileRef = E4C911C324E284B30061DA40 /* ZLPhotoBrowser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E4C911D224E2884E0061DA40 /* ZLPhotoPreviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C911D124E2884E0061DA40 /* ZLPhotoPreviewSheet.swift */; platformFilter = ios; };
 		E4C911D424E288780061DA40 /* ZLPhotoConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C911D324E288780061DA40 /* ZLPhotoConfiguration.swift */; platformFilter = ios; };
 		E4C911D824E298B80061DA40 /* ZLGeneralDefine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C911D724E298B80061DA40 /* ZLGeneralDefine.swift */; platformFilter = ios; };
@@ -77,7 +76,6 @@
 		E49FD9FD258A150600185885 /* PHAsset+ZLPhotoBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHAsset+ZLPhotoBrowser.swift"; sourceTree = "<group>"; };
 		E4A9CE002505DB91003201C1 /* ZLEmbedAlbumListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZLEmbedAlbumListView.swift; sourceTree = "<group>"; };
 		E4C911C024E284B30061DA40 /* ZLPhotoBrowser.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ZLPhotoBrowser.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E4C911C324E284B30061DA40 /* ZLPhotoBrowser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZLPhotoBrowser.h; sourceTree = "<group>"; };
 		E4C911C424E284B30061DA40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E4C911D124E2884E0061DA40 /* ZLPhotoPreviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZLPhotoPreviewSheet.swift; sourceTree = "<group>"; };
 		E4C911D324E288780061DA40 /* ZLPhotoConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZLPhotoConfiguration.swift; sourceTree = "<group>"; };
@@ -131,7 +129,6 @@
 			isa = PBXGroup;
 			children = (
 				E4C911C424E284B30061DA40 /* Info.plist */,
-				E4C911C324E284B30061DA40 /* ZLPhotoBrowser.h */,
 				E49BD1F824E3D332005D7DFB /* ZLPhotoBrowser.bundle */,
 				E4C911CD24E286C30061DA40 /* General */,
 				E4C911CF24E287700061DA40 /* Edit */,
@@ -221,7 +218,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4C911C524E284B30061DA40 /* ZLPhotoBrowser.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
