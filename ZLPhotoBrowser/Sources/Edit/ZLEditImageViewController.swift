@@ -431,12 +431,9 @@ extension ZLEditImageViewController: UICollectionViewDataSource, UICollectionVie
 extension ZLEditImageViewController {
     
     @objc public enum EditImageTool: Int {
-        case draw
+ 
         case clip
-        case imageSticker
-        case textSticker
-        case mosaic
-        case filter
+
     }
     
 }

@@ -197,17 +197,12 @@ public class ZLPhotoConfiguration: NSObject {
     /// Allow to choose the minimum duration of the video. Defaults to 0.
     @objc public var minSelectVideoDuration: Second = 0
     
-    private var pri_editImageTools: [ZLEditImageViewController.EditImageTool] = [.draw, .clip, .imageSticker, .textSticker, .mosaic, .filter]
+
     /// Edit image tools. (Default order is draw, clip, imageSticker, textSticker, mosaic, filtter)
     /// Because Objective-C Array can't contain Enum styles, so this property is invalid in Objective-C.
     /// - warning: If you want to use the image sticker feature, you must provide a view that implements ZLImageStickerContainerDelegate.
     public var editImageTools: [ZLEditImageViewController.EditImageTool] {
-        set {
-            pri_editImageTools = newValue
-        }
-        get {
-            return [.clip]
-        }
+        return [.clip]
     }
     
     private var pri_editImageDrawColors: [UIColor] = [.white, .black, zlRGB(241, 79, 79), zlRGB(243, 170, 78), zlRGB(80, 169, 56), zlRGB(30, 183, 243), zlRGB(139, 105, 234)]
