@@ -895,32 +895,7 @@ extension ZLClipImageViewController: UIScrollViewDelegate {
         return self.containerView
     }
     
-    func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
-        self.startEditing()
-    }
-    
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        guard scrollView == self.scrollView else {
-            return
-        }
-        self.startEditing()
-    }
-    
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        guard scrollView == self.scrollView else {
-            return
-        }
-        self.startTimer()
-    }
-    
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        guard scrollView == self.scrollView else {
-            return
-        }
-        if !decelerate {
-            self.startTimer()
-        }
-    }
+  
     
 }
 
