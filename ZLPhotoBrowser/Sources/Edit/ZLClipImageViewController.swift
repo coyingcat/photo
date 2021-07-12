@@ -140,11 +140,7 @@ class ZLClipImageViewController: UIViewController {
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return .portrait
     }
-    
-    deinit {
-        zl_debugPrint("ZLClipImageViewController deinit")
-        self.cleanTimer()
-    }
+
     
     init(image: UIImage, editRect: CGRect?, angle: CGFloat = 0) {
         self.originalImage = image
@@ -701,78 +697,7 @@ class ZLClipImageViewController: UIViewController {
         self.changeClipBoxFrame(newFrame: frame)
     }
     
-    func startEditing() {
-        self.cleanTimer()
-        if self.rotateBtn.alpha != 0 {
-            self.rotateBtn.layer.removeAllAnimations()
-            self.clipRatioColView.layer.removeAllAnimations()
-            UIView.animate(withDuration: 0.2) {
-                self.rotateBtn.alpha = 0
-                self.clipRatioColView.alpha = 0
-            }
-        }
-    }
-    
-    func endEditing() {
-        self.moveClipContentToCenter()
-    }
-    
-    func startTimer() {
-        self.cleanTimer()
-        self.resetTimer = Timer.scheduledTimer(withTimeInterval: 0.8, repeats: false, block: { (timer) in
-            self.cleanTimer()
-            self.endEditing()
-        })
-    }
-    
-    func cleanTimer() {
-        self.resetTimer?.invalidate()
-        self.resetTimer = nil
-    }
-    
-    func moveClipContentToCenter() {
-        let maxClipRect = self.maxClipFrame
-        var clipRect = self.clipBoxFrame
-        
-        if clipRect.width < CGFloat.ulpOfOne || clipRect.height < CGFloat.ulpOfOne {
-            return
-        }
-        
-        let scale = min(maxClipRect.width/clipRect.width, maxClipRect.height/clipRect.height)
-        
-        let focusPoint = CGPoint(x: clipRect.midX, y: clipRect.midY)
-        let midPoint = CGPoint(x: maxClipRect.midX, y: maxClipRect.midY)
-        
-        clipRect.size.width = ceil(clipRect.width * scale)
-        clipRect.size.height = ceil(clipRect.height * scale)
-        clipRect.origin.x = maxClipRect.minX + ceil((maxClipRect.width-clipRect.width)/2)
-        clipRect.origin.y = maxClipRect.minY + ceil((maxClipRect.height-clipRect.height)/2)
-        
-        var contentTargetPoint = CGPoint.zero
-        contentTargetPoint.x = (focusPoint.x + self.scrollView.contentOffset.x) * scale
-        contentTargetPoint.y = (focusPoint.y + self.scrollView.contentOffset.y) * scale
-        
-        var offset = CGPoint(x: contentTargetPoint.x - midPoint.x, y: contentTargetPoint.y - midPoint.y)
-        offset.x = max(-clipRect.minX, offset.x)
-        offset.y = max(-clipRect.minY, offset.y)
-        UIView.animate(withDuration: 0.3) {
-            if scale < 1 - CGFloat.ulpOfOne || scale > 1 + CGFloat.ulpOfOne {
-                self.scrollView.zoomScale *= scale
-                self.scrollView.zoomScale = min(self.scrollView.maximumZoomScale, self.scrollView.zoomScale)
-            }
 
-            if self.scrollView.zoomScale < self.scrollView.maximumZoomScale - CGFloat.ulpOfOne {
-                offset.x = min(self.scrollView.contentSize.width-clipRect.maxX, offset.x)
-                offset.y = min(self.scrollView.contentSize.height-clipRect.maxY, offset.y)
-                self.scrollView.contentOffset = offset
-            }
-            self.rotateBtn.alpha = 1
-            self.clipRatioColView.alpha = 1
-        
-            self.changeClipBoxFrame(newFrame: clipRect)
-        }
-    }
-    
     func clipImage() -> (clipImage: UIImage, editRect: CGRect) {
         let frame = self.convertClipRectToEditImageRect()
         
