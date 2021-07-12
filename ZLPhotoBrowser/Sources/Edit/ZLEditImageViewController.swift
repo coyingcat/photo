@@ -82,9 +82,6 @@ public class ZLEditImageViewController: UIViewController {
     // Show draw lines.
     var drawingImageView: UIImageView!
     
-    // Show text and image stickers.
-    var stickersContainer: UIView!
-    
     // 处理好的马赛克图片
     var mosaicImage: UIImage?
     
@@ -255,7 +252,6 @@ public class ZLEditImageViewController: UIViewController {
         self.mosaicImageLayer?.frame = self.imageView.bounds
         self.mosaicImageLayerMaskLayer?.frame = self.imageView.bounds
         self.drawingImageView.frame = self.imageView.frame
-        self.stickersContainer.frame = self.imageView.frame
         
         // 针对于长图的优化
         if (self.editRect.height / self.editRect.width) > (self.view.frame.height / self.view.frame.width * 1.1) {
@@ -294,9 +290,7 @@ public class ZLEditImageViewController: UIViewController {
         self.drawingImageView.contentMode = .scaleAspectFit
         self.drawingImageView.isUserInteractionEnabled = true
         self.containerView.addSubview(self.drawingImageView)
-        
-        self.stickersContainer = UIView()
-        self.containerView.addSubview(self.stickersContainer)
+
         
         let color1 = UIColor.black.withAlphaComponent(0.35).cgColor
         let color2 = UIColor.black.withAlphaComponent(0).cgColor
@@ -382,7 +376,6 @@ public class ZLEditImageViewController: UIViewController {
         let transform = CGAffineTransform(rotationAngle: self.angle.toPi)
         self.imageView.transform = transform
         self.drawingImageView.transform = transform
-        self.stickersContainer.transform = transform
     }
     
     @objc func cancelBtnClick() {
@@ -400,8 +393,7 @@ public class ZLEditImageViewController: UIViewController {
         
         vc.clipDoneBlock = { [weak self] (angle, editFrame, selectRatio) in
             guard let `self` = self else { return }
-            let oldAngle = self.angle
-            let oldContainerSize = self.stickersContainer.frame.size
+        
             if self.angle != angle {
                 self.angle = angle
                 self.rotationImageView()
