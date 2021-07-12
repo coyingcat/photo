@@ -72,13 +72,6 @@ class ViewController: UIViewController {
             make.top.equalTo(previewSelectBtn.snp.bottom).offset(20)
         }
         
-        let previewLocalAndNetImageBtn = createBtn("Preview local and net image", #selector(previewLocalAndNetImage))
-        self.view.addSubview(previewLocalAndNetImageBtn)
-        previewLocalAndNetImageBtn.snp.makeConstraints { (make) in
-            make.left.equalTo(cameraBtn.snp.right).offset(20)
-            make.centerY.equalTo(cameraBtn)
-        }
-        
 
         
         let takeLabel = UILabel()
@@ -167,56 +160,7 @@ class ViewController: UIViewController {
         }
     }
     
-    @objc func previewLocalAndNetImage() {
-        var datas: [Any] = []
-        // network image
-        datas.append(URL(string: "https://cdn.pixabay.com/photo/2020/10/14/18/35/sign-post-5655110_1280.png")!)
-        datas.append(URL(string: "https://pic.netbian.com/uploads/allimg/190518/174718-1558172838db13.jpg")!)
-        datas.append(URL(string: "http://5b0988e595225.cdn.sohucs.com/images/20190420/1d1070881fd540db817b2a3bdd967f37.gif")!)
-        datas.append(URL(string: "https://cdn.pixabay.com/photo/2019/11/08/11/56/cat-4611189_1280.jpg")!)
-        
-        // network video
-        let netVideoUrlString = "https://freevod.nf.migu.cn/mORsHmtum1AysKe3Ry%2FUb5rA1WelPRwa%2BS7ylo4qQCjcD5a2YuwiIC7rpFwwdGcgkgMxZVi%2FVZ%2Fnxf6NkQZ75HC0xnJ5rlB8UwiH8cZUuvErkVufDlxxLUBF%2FIgUEwjiq%2F%2FV%2FoxBQBVMUzAZaWTvOE5dxUFh4V3Oa489Ec%2BPw0IhEGuR64SuKk3MOszdFg0Q/600575Y9FGZ040325.mp4?msisdn=2a257d4c-1ee0-4ad8-8081-b1650c26390a&spid=600906&sid=50816168212200&timestamp=20201026155427&encrypt=70fe12c7473e6d68075e9478df40f207&k=dc156224f8d0835e&t=1603706067279&ec=2&flag=+&FN=%E5%B0%86%E6%95%85%E4%BA%8B%E5%86%99%E6%88%90%E6%88%91%E4%BB%AC"
-        datas.append(URL(string: netVideoUrlString)!)
-        
-        // phasset
-        if self.takeSelectedAssetsSwitch.isOn {
-            datas.append(contentsOf: self.selectedAssets)
-        }
-        
-        // local image
-        datas.append(contentsOf:
-            (1...3).compactMap { UIImage(named: "image" + String($0)) }
-        )
-        
-        let videoSuffixs = ["mp4", "mov", "avi", "rmvb", "rm", "flv", "3gp", "wmv", "vob", "dat", "m4v", "f4v", "mkv"] // and more suffixs
-        let vc = ZLImagePreviewController(datas: datas, index: 0, showSelectBtn: true) { (url) -> ZLURLType in
-            // Just for demo.
-            if url.absoluteString == netVideoUrlString {
-                return .video
-            }
-            if let sf = url.absoluteString.split(separator: ".").last, videoSuffixs.contains(String(sf)) {
-                return .video
-            } else {
-                return .image
-            }
-        } urlImageLoader: { (url, imageView, progress, loadFinish) in
-            imageView.kf.setImage(with: url) { (receivedSize, totalSize) in
-                let percentage = (CGFloat(receivedSize) / CGFloat(totalSize))
-                debugPrint("\(percentage)")
-                progress(percentage)
-            } completionHandler: { (_) in
-                loadFinish()
-            }
-        }
-        
-        vc.doneBlock = { (datas) in
-            debugPrint(datas)
-        }
-        
-        vc.modalPresentationStyle = .fullScreen
-        self.showDetailViewController(vc, sender: nil)
-    }
+
     
     @objc func showCamera() {
         let camera = ZLCustomCamera()
