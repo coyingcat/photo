@@ -206,7 +206,7 @@ class ZLClipImageViewController: UIViewController {
         
         let ratioColViewY = self.bottomToolView.frame.minY - ZLClipImageViewController.clipRatioItemSize.height - 5
         self.rotateBtn.frame = CGRect(x: 30, y: ratioColViewY + (ZLClipImageViewController.clipRatioItemSize.height-25)/2, width: 25, height: 25)
-        let ratioColViewX = self.rotateBtn.frame.maxX + 15
+      
     }
     
     func setupUI() {
@@ -270,11 +270,6 @@ class ZLClipImageViewController: UIViewController {
         self.rotateBtn.addTarget(self, action: #selector(rotateBtnClick), for: .touchUpInside)
         self.view.addSubview(self.rotateBtn)
         
-        let layout = UICollectionViewFlowLayout()
-        layout.itemSize = ZLClipImageViewController.clipRatioItemSize
-        layout.scrollDirection = .horizontal
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 20)
-
         self.scrollView.alpha = 0
         self.bottomToolView.alpha = 0
         self.rotateBtn.alpha = 0
