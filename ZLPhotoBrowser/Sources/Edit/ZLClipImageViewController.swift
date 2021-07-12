@@ -89,8 +89,6 @@ class ZLClipImageViewController: UIViewController {
     
     var cancelBtn: UIButton!
     
-    var revertBtn: UIButton!
-    
     var doneBtn: UIButton!
     
     var rotateBtn: UIButton!
@@ -249,7 +247,7 @@ class ZLClipImageViewController: UIViewController {
         let toolBtnY = (ZLClipImageViewController.bottomToolViewH - toolBtnH) / 2 - 10
         self.cancelBtn.frame = CGRect(x: 30, y: toolBtnY, width: toolBtnH, height: toolBtnH)
         let revertBtnW = localLanguageTextValue(.revert).boundingRect(font: ZLLayout.bottomToolTitleFont, limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: toolBtnH)).width + 20
-        self.revertBtn.frame = CGRect(x: (self.view.bounds.width-revertBtnW)/2, y: toolBtnY, width: revertBtnW, height: toolBtnH)
+      
         self.doneBtn.frame = CGRect(x: self.view.bounds.width-30-toolBtnH, y: toolBtnY, width: toolBtnH, height: toolBtnH)
         
         let ratioColViewY = self.bottomToolView.frame.minY - ZLClipImageViewController.clipRatioItemSize.height - 5
@@ -312,13 +310,6 @@ class ZLClipImageViewController: UIViewController {
         self.cancelBtn.addTarget(self, action: #selector(cancelBtnClick), for: .touchUpInside)
         self.bottomToolView.addSubview(self.cancelBtn)
         
-        self.revertBtn = UIButton(type: .custom)
-        self.revertBtn.setTitleColor(.white, for: .normal)
-        self.revertBtn.setTitle(localLanguageTextValue(.revert), for: .normal)
-        self.revertBtn.zl_enlargeValidTouchArea(inset: 20)
-        self.revertBtn.titleLabel?.font = ZLLayout.bottomToolTitleFont
-        self.revertBtn.addTarget(self, action: #selector(revertBtnClick), for: .touchUpInside)
-        self.bottomToolView.addSubview(self.revertBtn)
         
         self.doneBtn = UIButton(type: .custom)
         self.doneBtn.setImage(getImage("zl_right"), for: .normal)
@@ -484,16 +475,7 @@ class ZLClipImageViewController: UIViewController {
         self.dismiss(animated: self.animate, completion: nil)
     }
     
-    @objc func revertBtnClick() {
-        self.angle = 0
-        self.editImage = self.originalImage
-        self.calculateClipRect()
-        self.imageView.image = self.editImage
-        self.layoutInitialImage()
-        
-        self.generateThumbnailImage()
-        self.clipRatioColView.reloadData()
-    }
+
     
     @objc func doneBtnClick() {
         let image = self.clipImage()
