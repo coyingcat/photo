@@ -128,8 +128,6 @@ public class ZLEditImageViewController: UIViewController {
     // 选择滤镜后对原图添加滤镜后的图片
     var filterImages: [String: UIImage] = [:]
     
-    var stickers: [UIView] = []
-    
     var isScrolling = false
     
     var shouldLayout = true
@@ -241,7 +239,7 @@ public class ZLEditImageViewController: UIViewController {
 
     
     func resetContainerViewFrame() {
-        self.scrollView.setZoomScale(1, animated: true)
+        
         self.imageView.image = self.editImage
         
         let editSize = self.editRect.size
@@ -278,8 +276,7 @@ public class ZLEditImageViewController: UIViewController {
         
         self.scrollView = UIScrollView()
         self.scrollView.backgroundColor = .black
-        self.scrollView.minimumZoomScale = 1
-        self.scrollView.maximumZoomScale = 3
+    
         self.scrollView.delegate = self
         self.view.addSubview(self.scrollView)
         
@@ -447,23 +444,7 @@ public class ZLEditImageViewController: UIViewController {
     }
   
 
-    
 
-   
-    
-    func getStickerOriginFrame(_ size: CGSize) -> CGRect {
-        let scale = self.scrollView.zoomScale
-        // Calculate the display rect of container view.
-        let x = (self.scrollView.contentOffset.x - self.containerView.frame.minX) / scale
-        let y = (self.scrollView.contentOffset.y - self.containerView.frame.minY) / scale
-        let w = view.frame.width / scale
-        let h = view.frame.height / scale
-        // Convert to text stickers container view.
-        let r = self.containerView.convert(CGRect(x: x, y: y, width: w, height: h), to: self.stickersContainer)
-        let originFrame = CGRect(x: r.minX + (r.width - size.width) / 2, y: r.minY + (r.height - size.height) / 2, width: size.width, height: size.height)
-        return originFrame
-    }
-    
     func buildImage() -> UIImage {
         let imageSize = self.originalImage.size
         
@@ -519,20 +500,7 @@ extension ZLEditImageViewController: UIGestureRecognizerDelegate {
 
 // MARK: scroll view delegate
 extension ZLEditImageViewController: UIScrollViewDelegate {
-    
-    public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return self.containerView
-    }
-    
-    public func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        let offsetX = (scrollView.frame.width > scrollView.contentSize.width) ? (scrollView.frame.width - scrollView.contentSize.width) * 0.5 : 0
-        let offsetY = (scrollView.frame.height > scrollView.contentSize.height) ? (scrollView.frame.height - scrollView.contentSize.height) * 0.5 : 0
-        self.containerView.center = CGPoint(x: scrollView.contentSize.width * 0.5 + offsetX, y: scrollView.contentSize.height * 0.5 + offsetY)
-    }
-    
-    public func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-        self.isScrolling = false
-    }
+
     
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard scrollView == self.scrollView else {
