@@ -306,14 +306,22 @@ public class ZLEditImageViewController: UIViewController {
         vc.modalPresentationStyle = .fullScreen
         
         vc.clipDoneBlock = { [weak self] (angle, editFrame) in
-            guard let `self` = self else { return }
-        
-            if self.angle != angle {
-                self.angle = angle
-                self.rotationImageView()
+            guard let `self` = self else {
+                return
             }
-            self.editRect = editFrame
-            self.resetContainerViewFrame()
+            var hasEdit = true
+            if self.editRect.size == self.imageSize, angle == 0{
+                hasEdit = false
+            }
+            
+            var resImage = self.originalImage
+            var editModel: ZLEditImageModel? = nil
+            if hasEdit {
+                resImage = self.editImage
+                resImage = resImage.clipImage(self.angle, self.editRect) ?? resImage
+                editModel = ZLEditImageModel(editRect: self.editRect, angle: self.angle)
+            }
+            self.editFinishBlock?(resImage, editModel)
          
         }
         

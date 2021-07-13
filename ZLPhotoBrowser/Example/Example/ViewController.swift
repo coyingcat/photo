@@ -139,12 +139,12 @@ class ViewController: UIViewController {
         }
         
         let ac = ZLPhotoPreviewSheet(selectedAssets: self.takeSelectedAssetsSwitch.isOn ? self.selectedAssets : [])
-        ac.selectImageBlock = { [weak self] (images, assets, isOriginal) in
+        ac.selectImageBlock = { [weak self] (images) in
             self?.selectedImages = images
-            self?.selectedAssets = assets
-            self?.isOriginal = isOriginal
+            
+            
             self?.collectionView.reloadData()
-            debugPrint("\(images)   \(assets)   \(isOriginal)")
+            debugPrint("\(images)  ")
         }
         ac.cancelBlock = {
             debugPrint("cancel select")
@@ -254,12 +254,11 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegateFl
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let ac = ZLPhotoPreviewSheet()
-        ac.selectImageBlock = { [weak self] (images, assets, isOriginal) in
+        ac.selectImageBlock = { [weak self] (images ) in
             self?.selectedImages = images
-            self?.selectedAssets = assets
-            self?.isOriginal = isOriginal
+            
             self?.collectionView.reloadData()
-            debugPrint("\(images)   \(assets)   \(isOriginal)")
+            debugPrint("\(images)   ")
         }
         
         ac.previewAssets(sender: self, assets: self.selectedAssets, index: indexPath.row, isOriginal: self.isOriginal)
